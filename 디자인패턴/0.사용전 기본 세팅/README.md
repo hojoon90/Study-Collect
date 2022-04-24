@@ -7,15 +7,15 @@ Github 기본 세팅시 헤매던 내용들을 정리하여 올려본다.
 
 ### 기본 브랜치 변경법
 1. 먼저 setting을 클릭해준다.
-    ![click_setting](./images/click_setting.png)
+    ![click_setting](./Images/click_setting.png)
 2. 그 후 'Branches' 클릭 후 'Default branch' 안에 있는 양방향으로 엇갈린 화살표를 클릭해준다.
-    ![click_branches_set](./images/click_branches_set.png)
+    ![click_branches_set](./Images/click_branches_set.png)
 3. 기본으로 사용하고 싶은 브랜치를 선택하고 Update를 클릭해준다.
-    ![switch_branch](./images/switch_branch.png)
+    ![switch_branch](./Images/switch_branch.png)
 4. 경고창이 나오면 그대로 클릭을 해준다.
-    ![confirm_click](./images/confirm_click.png)
+    ![confirm_click](./Images/confirm_click.png)
 5. 기본 브랜치가 master -> main으로 변경된 것을 확인할 수 있다.
-    ![change](./images/change.png)
+    ![change](./Images/change.png)
 
 ### local에서 브랜치 삭제 명령어
 local 에서 브랜치 삭제는 아래와 같이 **git branch -d {삭제할 브랜치}** 명령어를 통해 삭제해주면 된다.
