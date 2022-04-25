@@ -30,7 +30,7 @@ choehojun@choehojuns-MacBook-Air Study-Collect % git branch --list
 ```
 
 ### 원격저장소 브랜치 삭제 방법
-원격저장소 브랜치 삭제 방법도 크게 다르진 않다.
+원격저장소 브랜치 삭제 방법도 크게 다르진 않다.\
 **git push origin --delete {삭제할 브랜치}** 로 명령어를 입력해주면, 다음과 같이 원격저장소에 있는 브랜치가 삭제된다.
 ```
 choehojun@choehojuns-MacBook-Air Study-Collect % git branch -a
@@ -46,8 +46,8 @@ choehojun@choehojuns-MacBook-Air Study-Collect % git branch -a
 ```
 
 ### 만약 원격저장소 브랜치가 남아있다면...
-만약 원격저장소에서는 브랜치를 삭제했는데, 아래처럼 삭제한 원격저장소의 브랜치가 남아있다면, 
-**git remote prune origin** 명령어를 이용하여 접근할 수 없는 저장소를 삭제해주면 된다.
+만약 원격저장소에서는 브랜치를 삭제했는데, 아래처럼 삭제한 원격저장소의 브랜치가 남아있다면, \
+**git remote prune origin** 명령어를 이용하여 접근할 수 없는 저장소를 삭제해주면 된다.\
 prune은 더이상 없는 저장소를 지울 때 사용하는 옵션이다.
 ```
 choehojun@choehojuns-MacBook-Air Study-Collect % git branch -a
