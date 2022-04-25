@@ -3,8 +3,8 @@
 ## Iterator 패턴이란
 
 우리가 기본적인 for문을 실행할 때, 다음과 같이 코드를 사용.
-```
-arr = {'apple', 'banana', 'grape', 'mango', 'orange', 'kiwi'}
+```java
+String[] arr = {"apple", "banana", "grape", "mango", "orange", "kiwi"};
 for(int i = 0; i < arr.length; i++){
     System.out.println(arr[i]);
 }
