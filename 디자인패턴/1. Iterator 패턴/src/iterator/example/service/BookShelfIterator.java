@@ -2,8 +2,6 @@ package iterator.example.service;
 
 import iterator.example.domain.Book;
 
-import java.util.Iterator;
-
 public class BookShelfIterator implements Iterator {
 
     private BookShelf bookShelf;

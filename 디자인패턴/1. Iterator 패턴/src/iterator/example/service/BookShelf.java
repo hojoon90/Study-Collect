@@ -3,7 +3,6 @@ package iterator.example.service;
 import iterator.example.domain.Book;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class BookShelf implements Aggregate{

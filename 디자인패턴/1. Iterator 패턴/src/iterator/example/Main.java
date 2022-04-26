@@ -4,9 +4,7 @@ package iterator.example;
 
 import iterator.example.domain.Book;
 import iterator.example.service.BookShelf;
-import iterator.example.service.BookShelfIterator;
-
-import java.util.Iterator;
+import iterator.example.service.Iterator;
 
 public class Main {
 
@@ -25,7 +23,7 @@ public class Main {
         bookShelf.appendBook(new Book("Harry Potter"));
         bookShelf.appendBook(new Book("What men Live By"));
 
-        Iterator iterator = new BookShelfIterator(bookShelf);
+        Iterator iterator = bookShelf.iterator();
 
         while (iterator.hasNext()){
             Book book = (Book) iterator.next();
