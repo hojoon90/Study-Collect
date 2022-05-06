@@ -24,6 +24,5 @@ public class UnderlinePen implements Product {
             e.printStackTrace();
         }
         return p;
-
     }
 }
