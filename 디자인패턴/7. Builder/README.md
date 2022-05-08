@@ -1,6 +1,14 @@
 # Builder 패턴
 
+### Builder 패턴이란
+Builder 패턴은 구조를 만들어가는 패턴이라고 이해하면 쉽다. 우리가 흔히 이야기하는 '빌드업'이라는 단어는\
+가장 기초부분부터 차근차근 쌓아 올라간다는 의미로 많이 사용하고 있다. Builder 패턴은 이와 유사하게 전체를 구성하는 각 부분을 만들고\
+단계를 밟아가며 만들어 나가는 패턴을 이야기 한다.\
+예제를 보며 자세하게 알아보자.
 
+### 구조의 구성과 그 구조를 실제로 만드는 Builder, Director
+먼저 예제 코드로 문서를 만드는 프로그램을 만들어 보려한다.\
+Builder 클래스는 문서를 만들기 위한 기초 구조를 갖고 있다.\
 ```java
 public abstract class Builder {
     public abstract void makeTitle(String title);
@@ -9,6 +17,9 @@ public abstract class Builder {
     public abstract void close();
 }
 ```
+Builder 는 추상 클래스로 선언되어 있으며, 안에 있는 메소드들 역시 추상 메소드로 이루어져 있다.\
+이 메소드들은 Builder 를 상속 받는 하위클래스들에서 구체화되어 만들어진다.\
+여기서는 각각 타이틀, 내용, 개별항목을 구성할 수 있도록 메소드들이 선언되어져 있다.
 
 ```java
 public class Director {
@@ -34,7 +45,15 @@ public class Director {
     }
 }
 ```
+Director 클래스는 Builder을 생성자로 생성하여 실제 문서를 만드는 클래스이다.\
+Director 인스턴스 생성 시 Builder를 상속 받는 하위 클래스들을 인자로 받으며, 어떤 하위 클래스가 넘어오냐에 따라 문서 형식이 달라지게 된다.\
+construct()는 실제 문서를 만드는 메소드이며, Builder에 선언되어있는 메소드들이 실행된다.\
+Builder에 선언되어있는 메소드들을 실행하지만 결과는 인자로 넘어온 하위 클래스들에 구체화된 코드들로 실행되게 된다.\
+여기서도 주목할 점은 실제 상속 받은 하위 클래스들은 선언되어있지 않다는 것이다.\
+이는 곧 하위 클래스들에 의존하지 않게 된다는 것을 의미한다.
 
+
+### 실제 구현 클래스들 및 Main 클래스
 ```java
 public class TextBuilder extends Builder{
     private StringBuffer buffer = new StringBuffer();
@@ -111,6 +130,8 @@ public class HTMLBuilder extends Builder{
     }
 }
 ```
+
+
 
 ```java
 public class Main {
