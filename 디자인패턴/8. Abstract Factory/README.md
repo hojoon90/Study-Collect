@@ -26,11 +26,10 @@ Abstract Factory 패턴 역시 Template Method, Builder 와 같이 구체적인 
 >   * ListTray.java
 >   * ListPage.java
 
-위의 factory 패키지들은 모두 추상메소드들로 이루어져 있고, 구체적인 구현들은 아래 listFactory의 패키지에서 진행된다.\
+위의 factory 패키지들은 모두 추상 클래스들로 이루어져 있고, 구체적인 구현들은 아래 listFactory의 패키지에서 진행된다.\
 먼저 factory 패키지 부터 살펴보자.
 
 ### 추상 메소드들로 이루어진 factory 패키지
-
 ```java
 package example.asf.factory;
 
@@ -42,4 +41,136 @@ public abstract class Item {
     public abstract String makeHtml();
 }
 ```
+```java
+package example.asf.factory;
 
+public abstract class Link extends Item{
+    protected String url;
+    public Link(String caption, String url){
+        super(caption);
+        this.url = url;
+    }
+}
+```
+```java
+package example.asf.factory;
+
+public abstract class Tray extends Item {
+    protected ArrayList tray = new ArrayList();
+    public Tray(String caption){
+        super(caption);
+    }
+    public void add(Item item){
+        tray.add(item);
+    }
+}
+```
+먼저 Item 클래스는 Link와 Tray가 상속받아 사용하고 있는 클래스이다. 이는 Link와 Tray 클래스를 동일시 하기 위함이다.\
+caption은 목차를 나타내는 필드이며, makeHtml()는 하위클래스에서 구현되는 추상메소드이다. 메소드 호출 시 Html의 문자열이 반환된다.
+
+Link 클래스는 하이퍼링크를 추상적으로 나타낸 클래스이다. url 필드는 말 그대로 URL을 저장하기 위한 필드이다.\
+Item을 상속받고 있지만, Item클래스에 있는 makeHtml()을 구현하고 있지는 않는다. 즉 Link 클래스 역시 추상 클래스라는 것을 알 수 있다.
+
+Tray 클래스는 복수의 Link나 Tray를 모아서 합친 것을 표시하는 클래스이다. 클래스 안에 ArrayList를 인스턴스로 생성하는 tray 필드가 있으며,\
+이 필드안에 Tray나 Link들을 모은다. 해당 클래스들을 모으는 메소드는 add메소드로 모으는데, Link 와 Tray 모두 모아야 하기 때문에,\
+인자로 Item 을 받는다.
+
+```java
+package example.asf.factory;
+
+public abstract class Page{
+    protected String title;
+    protected String author;
+    protected ArrayList content = new ArrayList();
+    public Page(String title, String author){
+        this.title = title;
+        this.author = author;
+    }
+    public void add(Item item){
+        content.add(item);
+    }
+    public void output(){
+        try{
+            String filename = title+".html";
+            Writer writer = new FileWriter(filename);
+            writer.write(this.makeHtml());
+            writer.close();
+            System.out.println(filename + " 을 작성하였습니다.");
+        }catch (IOException ie){
+            ie.printStackTrace();
+        }
+    }
+    public abstract String makeHtml();
+}
+```
+Page 클래스는 Html 페이지 전체를 추상적으로 표현한 클래스이다. 이 클래스는 위의 두 클래스(Link, Tray)와는 다르게 **제품**의 역할을 하는 클래스이다.\
+페이지 역시 add()를 이용해서 Link와 Tray를 추가한다. output()은 title필드를 이용하여 파일명을 만들고, 자기 자신의 클래스 안에 있는\
+makeHtml()을 이용해서 내용을 작성한다. 여기서 호출하는 makeHtml()은 추상 메소드인데, output()만 놓고 본다면 간단한 Template Method 패턴이\
+이용되고 있다.
+
+```java
+package example.asf.factory;
+
+public abstract class Factory {
+    public static Factory getFactory(String classname){
+        Factory factory = null;
+        try{
+            factory = (Factory)Class.forName(classname).newInstance();
+        }catch (ClassNotFoundException cfe){
+            System.err.println("클래스" + classname + "이 발견되지 않았습니다.");
+        }catch (Exception e){
+            e.printStackTrace;
+        }
+        return factory;
+    }
+    public abstract Link createLink(String caption, String url);
+    public abstract Tray createTray(String caption);
+    public abstract Page createPage(String title, String author);
+}
+
+```
+Factory 클래스는 위에서 만든 부품들과 제품을 조립하는 클래스라고 생각하면 된다. getFactory 메소드는 클래스 이름을 인자로 받아서\
+Factory 클래스로 리턴하는데, **인자로 받은 클래스 이름을 Class.forName()을 이용하여 동적으로 클래스를 읽은 후, newInstance를 통해\
+읽은 클래스의 인스턴스를 한개 생성한다.**\
+getFactory()에서는 인자로 넘어온 클래스 이름을 동적으로 읽어 인스턴스로 만들지만, 리턴은 Factory클래스로 리턴하는 것에 주의한다.\
+createLink, createTray, createPage는 부품이나 제품을 생성할때 사용하는 메소드이다. 실제 구현은 모두 Factory의 하위 클래스에서 구현된다.
+
+### Main 클래스
+```java
+public class Main{
+    public static void main(String[] args){
+        if(args.length != 1){
+            System.out.println("Usage: java Main class.name.of.ConcreteFactory");
+            System.out.println("Example1: java Main listfactory.ListFactory");
+            System.out.println("Example2: java Main tablefactory.TableFactory");
+            System.exit(0);
+        }
+        Factory factory = Factory.getFactory(args[0]);
+        
+        Link daum = factory.createLink("다음", "https://www.daum.net/");     
+        Link naver = factory.createLink("네이버", "https://www.naver.com/");     
+        Link google = factory.createLink("구글", "https://www.google.com/");     
+        
+        Link youtube = factory.createLink("유튜브", "https://www.youtube.com/");     
+        
+        Link github = factory.createLink("깃허브", "https://github.com/");
+        
+        Tray trayPotal = factory.createTray("포털");
+        trayPotal.add(daum);
+        trayPotal.add(naver);
+        trayPotal.add(google);
+
+        Tray trayStream = factory.createTray("스트리밍");
+        trayStream.add(youtube);
+
+        Tray trayStorage = factory.createTray("저장소");
+        trayStorage.add(github);
+        
+        Page page = factory.cretePage("LinkPage", "H.J.CHOI");
+        page.add(trayPotal);
+        page.add(trayStream);
+        page.add(trayStorage);
+        page.output();
+    }
+}
+```
