@@ -137,6 +137,8 @@ createLink, createTray, createPage는 부품이나 제품을 생성할때 사용
 
 ### Main 클래스
 ```java
+import example.asf.factory.*;
+
 public class Main{
     public static void main(String[] args){
         if(args.length != 1){
@@ -171,6 +173,62 @@ public class Main{
         page.add(trayStream);
         page.add(trayStorage);
         page.output();
+    }
+}
+```
+Main 클래스는 실제 부품과 제품을 조립하여 html페이지를 만드는 클래스이다. 클래스 내용을 자세히 보면 구체적인 클래스가 없는 것을 알 수 있다.\
+구체적인 클래스는 Main을 실행할 때 커맨드 라인에 인수로 작성하게 된다. 각 링크 생성 후, Tray에 알맞는 링크들을 넣고 페이지에 Tray들을 넣어\
+페이지를 완성한다.
+
+### 구체적으로 구현된 클래스들
+위에서는 추상적인 클래스와 추상적인 메소드들에 대한 예제들을 작성했다. 이번에는 구체적으로 구현된 클래스들에 대한 예제들이다.
+```java
+package listfactory;
+
+import example.asf.factory.*;
+
+public class ListFactory extends Factory{
+    public Link createLink (String caption, String url){
+        return new ListLink (caption, url);
+    }
+    public Tray createTray (String caption){
+        return new ListTray(caption);
+    }
+    public Page createLink (String title, String author){
+        return new ListPage(title, author);
+    }
+}
+```
+
+```java
+public class ListLink extends Link{
+    public ListLink (String caption, String url){
+        super(caption, url);
+    }
+    public String makeHtml(){
+        return " <li><a href=\""+url+"\">" + caption + "</a></li>\n";
+    }
+}
+```
+
+```java
+public class ListTray extends Tray{
+    public ListTray(String caption){
+        super(caption);
+    }
+    public String makeHtml(){
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<li>\n");
+        buffer.append(caption + "\n");
+        buffer.append("<ul>\n");
+        Iterator it = tray.iterator();
+        while(it.hasNext()){
+            Item item = (Item)it.next();
+            buffer.append(item.makeHtml());
+        }
+        buffer.append("</ul>\n");
+        buffer.append("</li>\n");
+        return buffer.toString();
     }
 }
 ```
