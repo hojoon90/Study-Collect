@@ -199,6 +199,8 @@ public class ListFactory extends Factory{
     }
 }
 ```
+ListFactory 클래스는 Factory 클래스를 상속받은 클래스로서, 단순하게 각각 ListLink, ListTray, ListPage 클래스의 인스턴스들을\
+새롭게 생성하는 역할만 하고 있다.
 
 ```java
 public class ListLink extends Link{
@@ -210,6 +212,8 @@ public class ListLink extends Link{
     }
 }
 ```
+ListLink 클래스는 Link 클래스를 상속받은 클래스이다. Link 클래스가 상속받던 Item 클래스 안에 있는 makeHtml 메소드를 구체화한다.\
+makeHtml메소드에서는 li 태그와 a 태그를 사용해서 html을 만들어주고 있다.
 
 ```java
 public class ListTray extends Tray{
@@ -232,3 +236,8 @@ public class ListTray extends Tray{
     }
 }
 ```
+ListTray 역시 Tray 클래스를 상속받은 클래스로서, 위의 ListLink와 마찬가지로 makeHtml()이 구체화되어있다. li 태그와 ul 태그를 이용하여\
+각각의 Item들을 출력해준다. 출력결과는 StringBuffer에 모아두었다가, 마지막에 toString으로 변환해준다.\
+여기서 while문을 자세하게 보자. tray에 담겨있는 데이터들을 Iterator를 이용해 하나씩 가져오고 가져온 데이터들을 Item 에 담아준 후,\
+makeHtml 메소드를 이용해 html을 구성한다. 여기서 item이 ListLink인지 ListTray인지 신경 쓸 필요는 없다. 두 클래스는 모두 Item을 상속 받고,\
+Item 클래스 안에는 makeHtml()이 존재한다. 단지 item.makeHtml()을 호출하면 알아서 html을 구성하게 된다.
