@@ -183,7 +183,7 @@ Main 클래스는 실제 부품과 제품을 조립하여 html페이지를 만�
 ### 구체적으로 구현된 클래스들
 위에서는 추상적인 클래스와 추상적인 메소드들에 대한 예제들을 작성했다. 이번에는 구체적으로 구현된 클래스들에 대한 예제들이다.
 ```java
-package listfactory;
+package example.asf.listfactory;
 
 import example.asf.factory.*;
 
@@ -203,6 +203,11 @@ ListFactory 클래스는 Factory 클래스를 상속받은 클래스로서, 단�
 새롭게 생성하는 역할만 하고 있다.
 
 ```java
+package example.asf.listfactory;
+
+import example.asf.factory.*;
+import java.util.Iterator;
+
 public class ListLink extends Link{
     public ListLink (String caption, String url){
         super(caption, url);
@@ -216,6 +221,11 @@ ListLink 클래스는 Link 클래스를 상속받은 클래스이다. Link 클�
 makeHtml메소드에서는 li 태그와 a 태그를 사용해서 html을 만들어주고 있다.
 
 ```java
+package example.asf.listfactory;
+
+import example.asf.factory.*;
+import java.util.Iterator;
+
 public class ListTray extends Tray{
     public ListTray(String caption){
         super(caption);
@@ -239,5 +249,136 @@ public class ListTray extends Tray{
 ListTray 역시 Tray 클래스를 상속받은 클래스로서, 위의 ListLink와 마찬가지로 makeHtml()이 구체화되어있다. li 태그와 ul 태그를 이용하여\
 각각의 Item들을 출력해준다. 출력결과는 StringBuffer에 모아두었다가, 마지막에 toString으로 변환해준다.\
 여기서 while문을 자세하게 보자. tray에 담겨있는 데이터들을 Iterator를 이용해 하나씩 가져오고 가져온 데이터들을 Item 에 담아준 후,\
-makeHtml 메소드를 이용해 html을 구성한다. 여기서 item이 ListLink인지 ListTray인지 신경 쓸 필요는 없다. 두 클래스는 모두 Item을 상속 받고,\
-Item 클래스 안에는 makeHtml()이 존재한다. 단지 item.makeHtml()을 호출하면 알아서 html을 구성하게 된다.
+makeHtml 메소드를 이용해 html을 구성한다.\
+
+여기서 item 을 이용하여 makeHtml() 메소드를 호출하고 있다. 이는 객체지향을 활용한 프로그래밍인데, Link, Tray모두 Item을 상속받고 있다.\
+그렇기 때문에 Item형으로 데이터를 받아 makeHtml을 호출 하면 구현 클래스가 어떤 건지 신경 쓸 필요없이 알아서 html이 만들어지게 된다.\
+가령 ListTray에서 사용하는 Item.makeHtml은 tray라는 ArrayList안에 있는 ListLink의 makeHtml()이 실행된다.\
+ListTray 역시 아래에 작성할 ListPage 안에서 makeHtml()이 실행되고, 이 역시 item.makeHtml() 로 호출된다. 아래 코드를 보자.
+
+```java
+package example.asf.listfactory;
+
+import example.asf.factory.*;
+import java.util.Iterator;
+
+public class ListPage extends Page{
+    public ListPage(String title, String author){
+        super(title, author);
+    }
+    public String makeHtml(){
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<html><head><title>"+title+"</title></head>\n");
+        buffer.append("<body>\n");
+        buffer.append("<h1>"+title+"</h1>\n");
+        buffer.append("<ul>\n");
+        Iterator it = content.iterator();
+        while(it.hasNext()){
+            Item item = (Item)it.next();
+            buffer.append(item.makeHtml());
+        }
+        buffer.append("</ul>\n");
+        buffer.append("<hr><address>"+author+"</address>");
+        buffer.append("</body></html>\n");
+        return buffer.toString();
+    }
+}
+```
+Iterator 부분부터 보자. 여기도 content 리스트를 Iterator를 이용해 하나씩 makeHtml을 실행하는데, ListTray안에 있는 makeHtml이 실행된다.\
+Iterator 위 아래에 'ul' 태그가 존재하는데, 이는 ListLink와 ListTray의 시작이 'li' 태그로 시작하기 때문이다.\
+이 때문에 ListPage에서 Iterator 를 통해 html이 만들어 질 때, 리스트 형태로 알맞게 데이터가 생성이 된다.\
+
+### abstract factory를 이용해 다른 형태로 구체화해보기
+abstract factory를 이용하면 추상화된 factory를 이용하여 다른 형태로 만들어 낼 수도 있다. 아래는 테이블 형태로 만드는 코드 예제이다.
+위의 내용과 크게 차이는 없으니 코드만 남기도록 하겠다.
+
+```java
+package example.asf.tablefactory;
+
+import example.asf.factory.*;
+
+public class TableFactory extends Factory{
+    public Link createLink (String caption, String url){
+        return new TableLink (caption, url);
+    }
+    public Tray createTray (String caption){
+        return new TableTray(caption);
+    }
+    public Page createLink (String title, String author){
+        return new TablePage(title, author);
+    }
+}
+```
+```java
+package example.asf.tablefactory;
+
+import example.asf.factory.*;
+import java.util.Iterator;
+
+public class TableLink extends Link{
+    public TableLink (String caption, String url){
+        super(caption, url);
+    }
+    public String makeHtml(){
+        return " <td><a href=\""+url+"\">" + caption + "</a></td>\n";
+    }
+}
+```
+```java
+package example.asf.tablefactory;
+
+import example.asf.factory.*;
+import java.util.Iterator;
+
+public class TableTray extends Tray{
+    public TableTray(String caption){
+        super(caption);
+    }
+    public String makeHtml(){
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<td>");
+        buffer.append("<table width=\"100%\" border=\"1\"><tr>");
+        buffer.append("<td bgcolor=\"#cccccc\" align=\"center\" colspan=\""
+                        +tray.size() +"\"><b>" + caption + "</b></td>");
+        buffer.append("</tr>\n");
+        buffer.append("<tr>\n");
+        Iterator it = tray.iterator();
+        while(it.hasNext()){
+            Item item = (Item)it.next();
+            buffer.append(item.makeHtml());
+        }
+        buffer.append("</tr></table>");
+        buffer.append("</td>");
+        return buffer.toString();
+    }
+}
+```
+```java
+package example.asf.tablefactory;
+
+import example.asf.factory.*;
+import java.util.Iterator;
+
+public class TablePage extends Page{
+    public TablePage(String title, String author){
+        super(title, author);
+    }
+    public String makeHtml(){
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<html><head><title>"+title+"</title></head>\n");
+        buffer.append("<body>\n");
+        buffer.append("<h1>"+title+"</h1>\n");
+        buffer.append("<table width=\"80%\" border=\"3\">\n");
+        Iterator it = content.iterator();
+        while(it.hasNext()){
+            Item item = (Item)it.next();
+            buffer.append(item.makeHtml());
+        }
+        buffer.append("</table>\n");
+        buffer.append("<hr><address>"+author+"</address>");
+        buffer.append("</body></html>\n");
+        return buffer.toString();
+    }
+}
+```
+
