@@ -20,7 +20,7 @@ Abstract Factory 패턴 역시 Template Method, Builder 와 같이 구체적인 
 >   * Link.java
 >   * Tray.java
 >   * Page.java
-> * listFactory
+> * listfactory
 >   * ListFactory.java
 >   * ListLink.java
 >   * ListTray.java
@@ -119,7 +119,7 @@ public abstract class Factory {
         }catch (ClassNotFoundException cfe){
             System.err.println("클래스" + classname + "이 발견되지 않았습니다.");
         }catch (Exception e){
-            e.printStackTrace;
+            e.printStackTrace();
         }
         return factory;
     }
@@ -168,7 +168,7 @@ public class Main{
         Tray trayStorage = factory.createTray("저장소");
         trayStorage.add(github);
         
-        Page page = factory.cretePage("LinkPage", "H.J.CHOI");
+        Page page = factory.createPage("LinkPage", "H.J.CHOI");
         page.add(trayPotal);
         page.add(trayStream);
         page.add(trayStorage);
@@ -194,7 +194,7 @@ public class ListFactory extends Factory{
     public Tray createTray (String caption){
         return new ListTray(caption);
     }
-    public Page createLink (String title, String author){
+    public Page createPage (String title, String author){
         return new ListPage(title, author);
     }
 }
@@ -206,7 +206,6 @@ ListFactory 클래스는 Factory 클래스를 상속받은 클래스로서, 단�
 package example.asf.listfactory;
 
 import example.asf.factory.*;
-import java.util.Iterator;
 
 public class ListLink extends Link{
     public ListLink (String caption, String url){
@@ -304,7 +303,7 @@ public class TableFactory extends Factory{
     public Tray createTray (String caption){
         return new TableTray(caption);
     }
-    public Page createLink (String title, String author){
+    public Page createPage (String title, String author){
         return new TablePage(title, author);
     }
 }
@@ -313,7 +312,6 @@ public class TableFactory extends Factory{
 package example.asf.tablefactory;
 
 import example.asf.factory.*;
-import java.util.Iterator;
 
 public class TableLink extends Link{
     public TableLink (String caption, String url){
@@ -382,3 +380,12 @@ public class TablePage extends Page{
 }
 ```
 
+### Abstract Factory 패턴의 장점과 단점
+Abstract Factory 패턴의 장점은 구체화하는 클래스를 새로 만드는게 편하다는 것이다. 위의 예제 코드들을 보자. 공통점은 모두 factory 패키지 안의\
+Factory, Link, Tray, Page 클래스의 구체화된 클래스들을 만들었다는 것이다. 즉 어떤 클래스를 만들어야 할지 명확하게 정해져 있다는 것이다.\
+이는 factory 패키지 안의 클래스들만 구체화 시키면 얼마든지 쉽게 구체화된 내용을 추가할 수 있다는 것이다.\
+또한 구체적인 클래스를 추가 혹은 수정하더라도 추상적인 부분은 수정할 필요가 없다는 것이다.
+
+하지만 단점도 존재하는데, 새로운 클래스를 추가하는 것이 어렵다. 예를 들어 factory 패키지 안에 새로운 추상 클래스를 추가한다고 생각해보자.\
+해당 클래스가 추가되어 사용하려면 연관되는 추상 클래스들을 모두 수정해줘야 한다. 또한, 해당 클래스들을 상속받는 구체화된 기존 클래스들의 변경이\
+불가피 하다. 이미 만들어진 클래스들이 많으면 많을수록 작업이 더욱더 늘어나게 된다.
