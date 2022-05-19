@@ -9,7 +9,7 @@ Bridge 패턴은 단어 뜻대로 두 개 사이를 연결해주는 패턴이다
 우리가 새로운 기능을 추가하는 경우를 생각해보자. 기존에 Temp라는 클래스가 존재하는데 여기에 새로운 기능을 추가하고 싶을 땐 \
 우리는 Temp의 하위 클래스로 TempAdd 라는 클래스를 만든다. 간단한 표로 보면 아래와 같다\
 * Temp
-  * TempAdd
+    * TempAdd
 
 이 TempAdd는 기능을 추가하기 위해 만든 계층이다. Temp클래스를 상속받게 되는 것이다.\
 >상위클래스는 기본적인 기능을 가지고 있다\
@@ -22,7 +22,7 @@ public class Temp {  // 상위클래스
     public void showName(){
         System.out.println("이름을 나타냅니다.");
     }
-    
+
     public void showPhoneNum(){
         System.out.println("전화번호를 나타냅니다.");
     }
@@ -33,7 +33,7 @@ public class TempAdd extends Temp{  // 하위클래스
     public void showAdress(){
         System.out.println("주소를 나타냅니다.");
     }
-    
+
     public void showAllData(){
         showName();
         showPhoneNum();
@@ -47,7 +47,7 @@ public class TempAdd extends Temp{  // 하위클래스
 추상 클래스는 상위 클래스로서 하위 클래스에서 구현해야 할 메소드들에 대해 명세를 하는 역할을 하며, 하위 클래스는 그것을 구현하는 역할을 한다.\
 역시 표로 보면 다음과 같다.
 * AbstractClass
-  * ExtendClass
+    * ExtendClass
 
 간단하게 정리하면
 > 상위 클래스는 추상메소드에 의해 인터페이스를 규정한다.\
@@ -108,4 +108,69 @@ public class CountDisplay extends Display{
 }
 ```
 Display의 하위 클래스인 CountDisplay 이다. Display에 구현된 기능에 출력횟수를 정하는 기능인 multiDisplay 메소드가 추가되어 있다.
-여기까지가 기능의 클래스 계층이다. 
+여기까지가 기능의 클래스 계층이다.
+
+### 구현의 클래스 계층
+```java
+public abstract class DisplayImpl {
+    public abstract void rawOpen();
+    public abstract void rawPrint();
+    public abstract void rawClose();
+}
+```
+DisplayImpl 은 기능의 클래스계층과 구현의 클래스 계층을 연결해주는 Bridge 역할
+
+```java
+public class StringDisplayImpl extends DisplayImpl {
+
+    private String string;
+    private int width;
+
+    public StringDisplayImpl(String string){
+        this.string = string;
+        this.width = string.getBytes().length;
+    }
+
+    @Override
+    public void rawOpen(){
+        printLine();
+    }
+
+    @Override
+    public void rawPrint(){
+        System.out.println("|" + string + "|");
+    }
+
+    @Override
+    public void rawClose(){
+        printLine();
+    }
+
+    private void printLine(){
+        System.out.print("+");
+        for (int i = 0; i < width; i++) {
+            System.out.print("-");
+        }
+        System.out.println("+");
+    }
+}
+```
+
+### 실행 코드
+```java
+public class Main {
+    public static void main(String[] args){
+        
+        Display d1 = new Display(new StringDisplayImpl("Hello, Korea!"));
+        Display d2 = new CountDisplay(new StringDisplayImpl("Hello, World!"));
+        
+        CountDisplay d3 = new CountDisplay(new StringDisplayImpl("Hello, Universe!"));
+        
+        d1.display();
+        d2.display();
+        d3.display();
+        
+        d3.multiDisplay(5);
+    }
+}
+```
