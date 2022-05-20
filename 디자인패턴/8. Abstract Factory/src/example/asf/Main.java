@@ -1,4 +1,4 @@
-package example.asf.;
+package example.asf;
 
 import example.asf.factory.*;
 

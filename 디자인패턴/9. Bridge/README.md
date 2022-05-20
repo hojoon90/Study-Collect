@@ -118,7 +118,8 @@ public abstract class DisplayImpl {
     public abstract void rawClose();
 }
 ```
-DisplayImpl 은 기능의 클래스계층과 구현의 클래스 계층을 연결해주는 Bridge 역할
+DisplayImpl 은 구현의 클래스 계층 중 상위 클래스에 해당한다. 이 클래스는 기능의 클래스 계층과 구현의 클래스 계층을 연결해주는 Bridge 역할을 해준다.\
+추상클래스로 이루어져 있으며, 해당 클래스를 상속받는 하위 클래스에서 추상 메소드들을 구현해주어야 한다.
 
 ```java
 public class StringDisplayImpl extends DisplayImpl {
@@ -155,8 +156,11 @@ public class StringDisplayImpl extends DisplayImpl {
     }
 }
 ```
+StringDisplayImpl 은 DisplayImpl 을 상속 받는 하위 클래스로서 DisplayImpl 안에 있는 추상 메소드들이 구현된 것을 확인할 수 있다.\
+이 두 개의 메소드가 바로 구현의 클래스 계층에 해당한다.
 
 ### 실행 코드
+다음은 위에서 만든 클래스들을 조합하여 실행 할 Main 클래스를 작성해준다.
 ```java
 public class Main {
     public static void main(String[] args){
@@ -174,3 +178,47 @@ public class Main {
     }
 }
 ```
+
+변수 d1 은 Display, 변수 d2, d3는 CountDisplay 인스턴스를 생성하고 있다. 3개 변수 모두 인스턴스를 생성할 때 DisplayImpl의 구현체인\
+StringDisplayImpl 을 생성하는 것을 볼 수 있다. d1, d2, d3는 모두 display 메소드의 호출이 가능하며, d3 의 경우 Display의 기능뿐만 아니라\
+추가된 기능인 multiDisplay 메소드도 호출이 가능해진다.\
+위 클래스의 출력결과는 아래와 같다.
+> +-------------+\
+> |Hello, Korea!|\
+> +-------------+\
+> +-------------+\
+> |Hello, World!|\
+> +-------------+\
+> +----------------+\
+> |Hello, Universe!|\
+> +----------------+\
+> +----------------+\
+> |Hello, Universe!|\
+> |Hello, Universe!|\
+> |Hello, Universe!|\
+> |Hello, Universe!|\
+> |Hello, Universe!|\
+> +----------------+\
+
+### Bridge 패턴의 고려 사항들
+
+Bridge 패턴의 가장 큰 특징은 '기능의 클래스 계층'과 '구현의 클래스 계층'을 분리한 것이다. 이렇게 분리하게 되면 각 계층 별로 독립적인 확장이 가능하다.\
+만약 기능을 추가하고 싶다면 기능의 클래스 계층에 클래스를 추가하면 된다. 이때 구현의 클래스 계층엔 수정할 사항이 전혀 없게 된다. 또한 새로 추가한 기능은\
+'모든 구현'에서 이용이 가능하다. \
+위의 Main 코드 중 d2와 d3를 보자. d3의 경우 기능이 추가된 클래스인데 인스턴스 생성 시 구현 클래스인 StringDisplayImpl 을 생성하는 것을 볼 수 있다.\
+지금은 구현 클래스가 StringDisplayImpl밖에 없지만, 구현 클래스가 몇개 더라도 StringDisplayImpl 위치에 다른 구현클래스가 오더라도 기능을 사용하는 데는\
+아무런 문제가 되지 않는다. 즉, '모든 구현'에서 이용이 가능해지는 것이다.\
+\
+위에서는 상속과 위임이 동시에 쓰였다. 상속은 클래스 확장을 위해서는 편리한 방법이지만 클래스간의 연결이 강하게 이루어진다.\
+Display와 CountDisplay를 보면 알기 쉬운데, CountDisplay는 Display 클래스의 하위 클래스이다. 그리고 이렇게 연결 된 클래스는 매우 견고하게\
+연결되어 클래스간의 관계 수정이 쉽지가 않게 된다.\
+만약 소스 코드 변경 없이 클래스간의 관계를 바꾸고 싶을 때는 상속이 아닌 **위임**을 사용해야 한다. 다시 Display 클래스를 보자.\
+Display 클래스 생성 시 impl 필드에 DisplayImpl 클래스를 구현하는 구현 인스턴스가 저장되어 있는데, 아래 메소드들에서 다음과 같이 호출을 한다.
+* open 실행 시 impl.rawOepn()을 호출한다.
+* print 실행 시 impl.rawPrint()을 호출한다.
+* close 실행 시 impl.rawClose()을 호출한다.
+
+이렇게 직접 처리가 아닌 impl안에 있는 메소드들을 호출하게끔 '떠넘기기'를 사용하고 있는데, 이걸 바로 위임이라고 한다. 위에서 보면 알겠지만\
+실제 실행은 생성자로 만들어지는 **DisplayImpl의 구현체 클래스안에 있는** rawOepn(), rawPrint(), rawClose()이 실행 되는 것이다.\
+실제 다른 메소드를 호출하고 싶다면 DisplayImpl의 구현체 클래스 부분을 변경해주면 되는 것이다. 만약 StrindDisplayImpl 가 아닌 다른\
+구현체 클래스의 출력 결과로 변경하고 싶을 경우, Main 클래스 안의 StrindDisplayImpl 를 사용하고 싶은 클래스로 변경만 해주면 된다.
