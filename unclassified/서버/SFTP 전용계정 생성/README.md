@@ -138,7 +138,7 @@ drwxr-xr-x. 2 sftp-test sftp-only 6 May 19 16:42 uploads
 [root@localhost sftp-test]# service sshd restart
 Redirecting to /bin/systemctl restart sshd.service
 ```
-사용자와 그룹 권한이 변경된게 확인돠었으면 실제로 접속 해보자. 접속하면 아래 이미지와 같이 '/'가 sftp_home으로 잡히며,\
+사용자와 그룹 권한이 변경된게 확인됐으면 실제로 접속 해보자. 접속하면 아래 이미지와 같이 '/'가 sftp_home으로 잡히며,\
 그 하위에 만들어 둔 계정 디렉토리로 접근하게 된다. 그리고 해당계정에서 uploads 디렉토리로 접근 가능한 것을 볼 수 있다.
 
 ![connection_success](./images/sftp_connect_success.png)
