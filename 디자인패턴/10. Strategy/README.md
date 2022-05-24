@@ -62,3 +62,93 @@ this.handValue는 0이고, 0+1 을 3으로 나눈 나머지는 1이 나온다. 1
 
 ### Strategy 코드들
 
+다음은 가위바위보의 전략을 위한 추상 메소드와 구현 메소드들을 작성해준다.
+```java
+public interface Strategy {
+    public abstract Hand nextHand();
+    public abstract void study(boolean win);
+}
+```
+위의 추상클래스 Strategy 는 각 전략들을 구현하기 위해 만든 인터페이스이다. 인터페이스 내부에 nextHand 와 study 라는 추상메소드가 존재하는데,\
+nextHand 메소드는 다음에 낼 손을 리턴하는 메소드이며, study 메소드는 이겼는지 졌는지에 대해 학습하는 메소드이다. 이 study 메소드에 따라\
+nextHand 메소드의 반환값이 결정된다.
+
+```java
+public class WinningStrategy implements Strategy{
+    private Random random;
+    private boolean won = false;
+    private Hand prevHand;
+    public WinningStrategy(int seed){
+        random = new Random(seed);
+    }
+    @Override
+    public Hand nextHand(){
+        if(!won){
+            prevHand = Hand.getHand(random.nextInt(3));
+        }
+        return prevHand;
+    }
+    @Override
+    public void study(boolean win){
+        won = win;
+    }
+}
+```
+WinningStrategy 클래스는 위에서 설명했던 것과 같이 이전 가위바위보에서 이겼다면 다음번에도 똑같은 손을 내는 클래스이다. 클래스를 자세히 보면\
+Strategy 클래스를 implements 하고 있다. 그렇기 때문에 아래 nextHand 와 study 메소드가 구현되어 있는 것을 확인할 수 있다.\
+nextHand 에서는 가위바위보에 졌을 경우 난수를 생성하여 새로운 손을 내며, study 메소드에서는 이겼을 때 전과 똑같은 손을 낼 수 있도록 boolean 값을\
+세팅해준다.
+
+```java
+public class ProbStrategy implements Strategy {
+    private Random random;
+    private int prevHandValue = 0;
+    private int currentHandValue = 0;
+    private int [][] history = {
+            {1, 1, 1},
+            {1, 1, 1},
+            {1, 1, 1},
+    };
+    public ProbStrategy(int seed){
+        random = new Random(seed);
+    }
+    public Hand nextHand(){
+        int bet = random.nextInt(getSum(currentHandValue));
+        int handValue = 0;
+        if (bet < history[currentHandValue][0]){
+            handValue = 0;
+        } else if (bet < history[currentHandValue][0] + history[currentHandValue][1]){
+            handValue = 1;
+        }else{
+            handValue = 2;
+        }
+        prevHandValue = currentHandValue;
+        currentHandValue = handValue;
+        return Hand.getHand(handValue);
+    }
+    private int getSum(int hv){
+        int sum = 0;
+        for (int i = 0; i < 3; i++){
+            sum += history[hv][i];
+        }
+        return sum;
+    }
+    public void study(boolean win){
+        if(win){
+            history[prevHandValue][currentHandValue]++;
+        } else {
+            history[prevHandValue][(currentHandValue + 1) % 3]++;
+            history[prevHandValue][(currentHandValue + 2) % 3]++;
+        }
+    }
+}
+```
+ProbStrategy 클래스는 다음손은 난수로 결정하지만, 과거 승패 이력을 이용해 각각 손을 낼 확률을 바꾸는 클래스이다. 이력을 확인하는 변수는\
+history 인데, 과거의 승패를 반영한 확률 계산을 하기 위한 표를 만든다. history를 조금 자세히 설명하자면
+>history[이전에 낸 손][이번에 낼 손]
+
+이 식의 값이 크면 클 수록 과거의 승률이 높다는 뜻이다. 예를들어 history[0][0]은 주먹,주먹을 냈을때 과거의 승수이다. 만약 이전에 주먹을 냈을 때,\
+history[0][0] (바위),\
+history[0][1] (가위),\
+history[0][2] (보)\
+의 승률을 각각 구해서 어떤 게 더 이길 확률이 높은지 구하는 것이다. 
