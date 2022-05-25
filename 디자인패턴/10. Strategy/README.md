@@ -147,8 +147,89 @@ ProbStrategy 클래스는 다음손은 난수로 결정하지만, 과거 승패 
 history 인데, 과거의 승패를 반영한 확률 계산을 하기 위한 표를 만든다. history를 조금 자세히 설명하자면
 >history[이전에 낸 손][이번에 낼 손]
 
-이 식의 값이 크면 클 수록 과거의 승률이 높다는 뜻이다. 예를들어 history[0][0]은 주먹,주먹을 냈을때 과거의 승수이다. 만약 이전에 주먹을 냈을 때,\
+이 식의 값이 크면 클 수록 과거의 승률이 높다는 뜻이다. 예를들어 history[0][0]은 바위, 바위를 냈을때 과거의 승수이다. 만약 이전에 주먹을 냈을 때,\
 history[0][0] (바위),\
 history[0][1] (가위),\
 history[0][2] (보)\
-의 승률을 각각 구해서 어떤 게 더 이길 확률이 높은지 구하는 것이다. 
+의 승률을 각각 구해서 어떤 게 더 이길 확률이 높은지 구하는 것이다. 만약 \
+history[0][0] 의 값이 3\
+history[0][1] 의 값이 5\
+history[0][2] 의 값이 7\
+일 경우 각각 3:5:7의 확률로 바위나 가위 또는 보를 선택하게 된다. 그 확률을 구하기 위해 먼저 getSum 메소드로 값들을 모두 더한 후,\
+nextHand 메소드에서 랜덤으로 나오는 수에 따라 바위 가위 보를 정하게 된다. 그내용에 해당하는 변수가 'bet' 변수이다. 그러고 나서 랜덤으로 나온\
+숫자가 0~3사이이면 주먹, 3~8사이이면 가위, 8~15사이이면 보를 내게 된다.
+
+### 실제 가위바위보를 하는 Player와 Main
+
+Player 클래스는 실제 가위바위보를 하는 플레이어이다. 
+```java
+public class Player {
+    private String name;
+    private Strategy strategy;
+    private int winCount;
+    private int loseCount;
+    private int gameCount;
+    public Player(String name, Strategy strategy){
+        this.name = name;
+        this.strategy = strategy;
+    }
+    public Hand nextHand(){
+        return strategy.nextHand();
+    }
+    public void win(){
+        strategy.study(true);
+        winCount++;
+        gameCount++;
+    }
+    public void lose(){
+        strategy.study(false);
+        loseCount++;
+        gameCount++;
+    }
+    public void even(){
+        gameCount++;
+    }
+    public String toString(){
+        return "[" + name + ":" + gameCount + "games, " + winCount + "win, " + loseCount + "lose" + "]";
+    }
+}
+```
+nextHand 메소드는 각 플레이어가 가진 전략에 있는 nextHand 를 가져온다. 즉 Strategy 클래스에 있는 nextHand를 호출하는데, 앞장에서 보았던\
+위임을 하고 있다. 플레이어는 이길 경우와 질 경우 각각 study를 통해 전략을 다시 세우고 세운 전략으로 선택한 손 중 하나를 다시 내게 된다.
+
+```java
+public class Main {
+    public static void main(String[] args){
+        if (args.length != 2){
+            System.out.println("Usage: java Main randomSeed1 randomSeed2");
+            System.out.println("Example: java Main 314 15");
+            System.exit(0);
+        }
+        int seed1 = Integer.parseInt(args[0]);
+        int seed2 = Integer.parseInt(args[1]);
+        Player player1 = new Player("두리", new WinningStrategy(seed1));
+        Player player2 = new Player("하나", new ProbStrategy(seed2));
+        for (int i = 0; i < 10000; i++) {
+            Hand nextHand1 = player1.nextHand();
+            Hand nextHand2 = player2.nextHand();
+            if (nextHand1.isStrongerThan(nextHand2)){
+                System.out.println("Winner: "+player1);
+                player1.win();
+                player2.lose();
+            }else if (nextHand2.isStrongerThan(nextHand1)){
+                System.out.println("Winner: "+player2);
+                player2.win();
+                player1.lose();
+            }else{
+                System.out.println("Even...");
+                player1.even();
+                player2.even();
+            }
+        }
+        System.out.println("total Result: ");
+        System.out.println(player1.toString());
+        System.out.println(player2.toString());
+    }
+}
+```
+Main 클래스에서는 총 10,000 번을 실행하여 결과를 표시해준다.
