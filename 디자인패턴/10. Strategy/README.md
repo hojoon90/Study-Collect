@@ -112,6 +112,7 @@ public class ProbStrategy implements Strategy {
     public ProbStrategy(int seed){
         random = new Random(seed);
     }
+    @Override
     public Hand nextHand(){
         int bet = random.nextInt(getSum(currentHandValue));
         int handValue = 0;
@@ -133,6 +134,7 @@ public class ProbStrategy implements Strategy {
         }
         return sum;
     }
+    @Override
     public void study(boolean win){
         if(win){
             history[prevHandValue][currentHandValue]++;
@@ -195,7 +197,7 @@ public class Player {
 }
 ```
 nextHand 메소드는 각 플레이어가 가진 전략에 있는 nextHand 를 가져온다. 즉 Strategy 클래스에 있는 nextHand를 호출하는데, 앞장에서 보았던\
-위임을 하고 있다. 플레이어는 이길 경우와 질 경우 각각 study를 통해 전략을 다시 세우고 세운 전략으로 선택한 손 중 하나를 다시 내게 된다.
+**위임**을 하고 있다. 플레이어는 이길 경우와 질 경우 각각 study를 통해 전략을 다시 세우고 세운 전략으로 선택한 손 중 하나를 다시 내게 된다.
 
 ```java
 public class Main {
@@ -233,3 +235,9 @@ public class Main {
 }
 ```
 Main 클래스에서는 총 10,000 번을 실행하여 결과를 표시해준다.
+
+### 고려해보아야 할 사항들
+Strategy 패턴은 실제 알고리즘이 들어가는 부분들을 별도로 분리하여 사용하는 패턴이다. 위에서 보았던 WinningStrategy와 ProbStrategy 클래스 모두\
+Strategy 인터페이스를 상속 받아 구현된 클래스들이다. 또한 Player 클래스를 보면 Strategy 인터페이스의 메소드를 호출 하고 있는데 위임을 통해서 생성된\
+인스턴스에 맞는 알고리즘이 실행된다. 이렇게 되면 사용자가 추가적인 알고리즘을 만들고 싶을 때 굉장히 유용해진다. Strategy 인터페이스를 상속 받는 새로운\
+클래스를 만들어주고 해당 클래스를 사용하도록 바꿔주기만 하면 되기 때문에 편하게 알고리즘 변경이 가능하다.
