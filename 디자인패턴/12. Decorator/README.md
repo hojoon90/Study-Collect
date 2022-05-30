@@ -49,3 +49,45 @@ StringDisplay 클래스는 Display를 상속받는 하위 클래스이며, 1행�
 string 변수 내용 하나만을 표시하기 때문에 getColumns 는 string 의 바이트 길이 만큼을 반환하며, getRows 는 1을 반환한다. 그리고 getRowText는 row가\
 0번째일 때만 string 을 리턴한다. 이 StringDisplay 클래스가 바로 베이스가 되는 클래스이다.
 
+### 장식을 나타내는 클래스들
+여기서 작성하는 Border 클래스와 SideBorder 클래스는 각각 장식을 나타내는 추상 클래스와 그 하위 클래스이다. 
+```java
+public abstract class Border extends Display {
+    protected Display display;
+    protected Border(Display display){
+        this.display = display;
+    }
+}
+```
+장식을 나타내는 추상클래스인 Border 클래스이다. 잘 보면 Display 클래스를 상속 받고 있는 것을 볼 수 있다. 이는 Border 클래스를 상속받는 하위 클래스에서\
+Display 에 있는 내용물과 동일한 메소드를 갖기 위해 Display를 상속받고 있다. Border가 Display와 같은 메소드를 갖고 있다는 것은 인터페이스적으로 두개를\
+동일시 할 수 있다는 의미이다.\
+\
+Border 클래스 안에 display 변수가 있는데, 이게 바로 위에서 작성했었던 베이스가 되는 내용물이다. 하지만 display 변수에는 꼭 StringDisplay가 올거란\
+보장은 할 수 없다. Border 클래스를 다시 봐보자. Display 클래스를 상속 받고 있다. 이는 곧 display 변수에 Border의 하위 클래스가 올 수도 있다는 것을\
+의미 한다. Border클래스도 어쨌든 Display 클래스를 상속받기 때문이다.
+
+```java
+public class SideBorder extends Border {
+    private char borderChar;
+    public SideBorder(Display display, char ch){
+        super(display);
+        this.borderChar = ch;
+    }
+    public int getColumns(){
+        return 1 + display.getColumns() + 1;
+    }
+    public int getRows(){
+        return display.getRows();
+    }
+    public String getRowText(int row){
+        return borderChar + display.getRowText(row) + borderChar;
+    }
+}
+```
+SideBorder 클래스는 Border 클래스를 상속 받는 하위 클래스이다. 이름에서 알 수 있듯이 글자의 사이드 양쪽에 정해진 문자로 문자열 장식을 하는 클래스이다.\
+예를 들어 borderChar 필드의 값이 '|'라고 한다면 
+> | 문자열 |
+
+과 같이 문자열 양 옆에 지정된 문자가 붙어 노출된다. borderChar 변수는 생성자에서 ch 변수를 받아 지정된다. Display 클래스에 있던 getColumns와 getRows\
+getRowText 메소드가 여기에서 구현된 것을 볼 수 있다. Display를 상속 받았기 때문이다. 
