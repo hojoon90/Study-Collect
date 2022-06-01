@@ -89,5 +89,40 @@ SideBorder 클래스는 Border 클래스를 상속 받는 하위 클래스이다
 예를 들어 borderChar 필드의 값이 '|'라고 한다면 
 > | 문자열 |
 
-과 같이 문자열 양 옆에 지정된 문자가 붙어 노출된다. borderChar 변수는 생성자에서 ch 변수를 받아 지정된다. Display 클래스에 있던 getColumns와 getRows\
-getRowText 메소드가 여기에서 구현된 것을 볼 수 있다. Display를 상속 받았기 때문이다. 
+과 같이 문자열 양 옆에 지정된 문자가 붙어 노출된다. borderChar 변수는 생성자에서 ch 변수를 받아 지정된다. Display 클래스에 있던 getColumns 와\
+getRows, getRowText 메소드가 여기에서 구현된 것을 볼 수 있다. Display를 상속 받았기 때문이다.\
+\
+구현 된 getColumns 에는 표시할 문자의 수를 알아내는 메소드이다. display.getColumns 메소드로 베이스가 될 문자열을 구할 수 있다. 거기에 앞뒤로 +1씩\
+더해주며 양 옆에 더해줘야할 문자열까지 계산된 문자 수를 리턴한다. display 변수는 Border 클래스에서 protected로 되어있기 때문에 바로 사용이 가능하다.\
+getRows 메소드는 display.getRows 메소드를 바로 리턴하는데, SideBorder 클래스는 양 옆의 문자열만 추가해주는 것이기 때문에 별도 처리 없이 바로\
+return 해준다. getRowText 메소드는 주어진 열 만큼 양 옆에 '장식'을 더해준다.
+
+```java
+public class FullBorder extends Border {
+    public FullBOrder(Display display){
+        super(display);
+    }
+    public int getColumns(){
+        return 1 + display.getColumns() + 1;
+    }
+    public int getRows(){
+        return 1 + display.getRows() + 1;
+    }
+    public String getRowText(int row){
+        if (row == 0) { // 장식 상단
+            return "+" + makeLine('-', display.getColumns()) + "+";
+        } else if (row == display.getRows() + 1 ){  // 장식 하단
+            return "+" + makeLine('-', display.getColumns()) + "+";
+        } else {
+            return "|" + display.getRowText(row - 1) + "|";  
+        }
+    }
+    private String makeLine(char ch, int count){
+        StringBuffer sbf = new StringBuffer();
+        for (int i = 0; i < count; i++) {
+            sbf.append(ch);
+        }
+        return sbf.toString();
+    }
+}
+```
