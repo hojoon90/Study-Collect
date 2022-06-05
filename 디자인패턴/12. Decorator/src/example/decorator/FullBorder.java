@@ -1,4 +1,4 @@
-package dp.ch12.decorator.example;
+package example.decorator;
 
 public class FullBorder extends Border {
     public FullBorder(Display display){

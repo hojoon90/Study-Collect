@@ -59,6 +59,8 @@ public class File extends Entry {
     public int getSize(){
         return size;
     }
+
+    @Override
     public void accept(Visitor v) {
         v.visit(this);
     }
@@ -94,6 +96,8 @@ public class Directory extends Entry {
     public Iterator iterator(){
         return directory.iterator();
     }
+
+    @Override
     public void accept(Visitor v) {
         v.visit(this);
     }
@@ -180,7 +184,33 @@ public class Main {
 }
 ```
 Main 클래스 역시 Composite 패턴과 동일하다. 다른점이라고 한다면 아래 rootdir.accept 메소드를 통해 ListVisitor 클래스가 모든 디렉토리와 파일을 방문해\
-디렉토리와 파일의 이름을 출력한다(visit 메소드). 
+디렉토리와 파일의 이름을 출력한다(visit 메소드).\
+출력 결과는 아래와 같다.
+
+>Making root entries...\
+>/root (30000)\
+>/root/bin (30000)\
+>/root/bin/vi (10000)\
+>/root/bin/latex (20000)\
+>/root/tmp (0)\
+>/root/usr (0)\
+>\
+>Making user entries...\
+>/root (31500)\
+>/root/bin (30000)\
+>/root/bin/vi (10000)\
+>/root/bin/latex (20000)\
+>/root/tmp (0)\
+>/root/usr (1500)\
+>/root/usr/Kim (300)\
+>/root/usr/Kim/diary.html (100)\
+>/root/usr/Kim/composite.java (200)\
+>/root/usr/Lee (300)\
+>/root/usr/Lee/memo.tex (300)\
+>/root/usr/Park (900)\
+>/root/usr/Park/game.doc (400)\
+>/root/usr/Park/junk.mail (500)
+
 
 ### Visitor 패턴 사용시 고려해야할 점
 Visitor 패턴의 목적은 처리를 데이터 구조에서 분리하는 일이다. File과 Directory 클래스를 자세히 보면 accept 메소드에서 visit 메소드를 호출하여 \
@@ -195,8 +225,8 @@ Directory 클래스는 새로운 '처리' 를 추가해서 기능 확장을 할 
 그렇기 때문에 클래스가 기능 확장을 할 수 없으면 곤란하다. 이와 동시에 기존에 완성되어 테스트까지 마친 클래스를 수정하는 것은 그 프로그램에 대한 신뢰성과\
 품질을 떨어트릴 우려가 있다. 확장에 대해서는 열려있으며 수정에 대해서는 닫혀있어야 클래스가 부품으로서의 재이용 가치가 높아지게 된다.\
 \
-Visitor가 제대로 된 처리를 하기 위해선 Element가 필요한 정보들을 전달해주어야 한다. Entry 클래스가 Elements 인터페이스를 상속 받은 것을 생각해보자.\
-Entry 클래스가 Elements 인터페이스를 상속받음으로 인해 Entry 클래스를 상속 받는 Directory 클래스와 File 클래스는 Elements 인터페이스에 자신들의 \
+Visitor가 제대로 된 처리를 하기 위해선 Element 가 필요한 정보들을 전달해주어야 한다. Entry 클래스가 Element 인터페이스를 상속 받은 것을 생각해보자.\
+Entry 클래스가 Element 인터페이스를 상속받음으로 인해 Entry 클래스를 상속 받는 Directory 클래스와 File 클래스는 Element 인터페이스에 자신들의 \
 클래스 안에 있는 정보들의 접근이 가능하도록 하고 있다. 특히 Directory 클래스에서 해당 디렉토리 안에 있는 내용을 확인하기 위해 Iterator 를 이용하여\
 디렉토리 엔트리를 얻을 수 있도록 해주고 있다. accept 메소드 호출 시 visit(Directory) 메소드를 호출 할 때 iterator()메소드에 접근 한 것을 생각해보자.\
 이렇게 방문자는 데이터 구조에서 필요한 정보를 얻어 처리 동작을 하게 된다. 필요한 정보를 얻을 수 없으면 방문자는 제대로 처리를 할 수 없으며, 필요 없는\

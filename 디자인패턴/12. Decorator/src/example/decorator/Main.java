@@ -1,4 +1,4 @@
-package dp.ch12.decorator.example;
+package example.decorator;
 
 public class Main {
     public static void main (String[] args){
