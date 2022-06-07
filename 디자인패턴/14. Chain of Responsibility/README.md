@@ -101,7 +101,7 @@ public class OddSupport extends Support {
         super(name);
     }
     protected boolean resolve(Trouble trouble){
-        if(trouble.getNumber % 2 == 1){
+        if(trouble.getNumber() % 2 == 1){
             return true;
         }else{
             return false;
@@ -119,7 +119,7 @@ public class SpecialSupport extends Support {
         this.number = number;
     }
     protected boolean resolve(Trouble trouble){
-        if(trouble.getNumber == number){
+        if(trouble.getNumber() == number){
             return true;
         }else{
             return false;
