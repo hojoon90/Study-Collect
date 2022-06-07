@@ -146,3 +146,28 @@ public class Main {
     }
 }
 ```
+Main 클래스는 6명의 문제해결자를 만들어준다. 변수들은 모두 Support 클래스이지만 생성된 클래스들은 모두 Support 클래스를 상속 받는 하위 클래스들이다. \
+인스턴스 생성 후 alice부터 차례대로 문제를 해결할 해결자들을 setNext 메소드로 세팅해준다. 그 후 alice에게 문제(Trouble)를 던져주고, 누가 문제를 해결하는지\
+표시한다. 실행결과는 아래와 같다.
+
+> [Trouble 0] is resolved by [Bob].\
+> [Trouble 33] is resolved by [Bob].\
+> [Trouble 66] is resolved by [Bob].\
+> [Trouble 99] is resolved by [Bob].\
+> [Trouble 132] is resolved by [Diana].\
+> [Trouble 165] is resolved by [Diana].\
+> [Trouble 198] is resolved by [Diana].\
+> [Trouble 231] is resolved by [Elmo].\
+> [Trouble 264] is resolved by [Fred].\
+> [Trouble 297] is resolved by [Elmo].\
+> [Trouble 330] cannot be resolved.\
+> [Trouble 363] is resolved by [Elmo].\
+> [Trouble 396] cannot be resolved.\
+> [Trouble 429] is resolved by [Charlie].\
+> [Trouble 462] cannot be resolved.\
+> [Trouble 495] is resolved by [Elmo].
+
+### 패턴 사용 시 고려해봐야할 점.
+책임떠넘기기 패턴은 요청자와 응답자를 유연하게 연결해준다. 요청자는 최초의 응답자에게 문제를 넘겨주면 응답자는 알아서 해당 문제를 알맞은 응답자에게 넘겨 \
+처리하도록 한다. 만약 이런 패턴이 사용되지 않으면 문제가 발생하였을 때 누가 처리 해주어야 하는지 지정을 해주어야 한다는 것이다. 이렇게 되면 요청자들이 \
+응답자들의 역할분담까지 알아야하기 때문에 부품으로서의 독립성이 훼손된다.\
