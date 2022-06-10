@@ -64,3 +64,30 @@ public class HtmlWriter {
     }
 }
 ```
+HtmlWriter 클래스는 간단한 웹페이지를 만드는 코드이다. 인스턴스 생성 시 Writer 클래스를 받아오며 Writer를 이용해 HTML을 출력한다. 각 메소드는 이름에\
+맞는 역할들을 수행한다.그리고 마지막 close 메소드는 HTML의 출력을 끝낸다.
+
+```java
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
+
+public class PageMaker() {
+    private PageMaker() {}
+    public static void makeWelcomePage(String mailAddr, String fileName){
+        try{
+            Properties mailProp = Database.getProperties("mailData");
+            String userName = mailProp.getProperties(mailAddr);
+            HtmlWriter writer = new HtmlWriter(new FileWriter(fileName));
+            writer.title("Welcome to " + userName + "'s page!");
+            writer.paragraph(username + "의 페이지에 오신것을 환영합니다.");
+            writer.paragraph("메일을 기다리고 있습니다.");
+            writer.mailto(mailAddr, userName);
+            writer.close();
+            System.out.println(fileName + " is created for " + mailAddr + " (" + userName + ")");
+        }catch (IOException ie){
+            ie.printStackTrace();
+        }
+    }
+}
+```
