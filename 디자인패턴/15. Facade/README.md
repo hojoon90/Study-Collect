@@ -72,7 +72,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 
-public class PageMaker() {
+public class PageMaker {
     private PageMaker() {}
     public static void makeWelcomePage(String mailAddr, String fileName){
         try{
@@ -91,3 +91,28 @@ public class PageMaker() {
     }
 }
 ```
+PageMaker 클래스는 Database 클래스와 HtmlWriter 클래스를 조합하여 사용자의 웹페이지를 작성하는 역할을 한다. 여기서 접근할 수 있는 메소드는\
+makeWelcomePage 단 하나뿐이다. 이 메소드가 바로 창구 역할을 하는 메소드이다. 이 메소드 안에서 HtmlWriter 클래스를 호출 하며, 사용자는 \
+makeWelcomePage 메소드를 호출함으로써 HtmlWriter 의 메소드까지 호출해주고 있는 것이다.
+
+```java
+import pagemaker.PageMaker;
+
+public class Main {
+    public static void main (String[] args){
+        PageMaker.makeWelcomePage("youngjin@youngjin.com", "welcome.html");
+    }
+}
+```
+Main에서는 PageMaker 의 makeWelcomePage 하나만을 호출한다. 이 메소드가 창구역할을 하기 때문이다.
+
+### 패턴 사용시 고려할 점
+Facade 패턴은 복잡한 것을 단순하게 보여주는 패턴이다. 내부에서 어떤일이 일어나는지 사용자는 알 필요 없이 창구역할의 메소드 하나만을 호출해주면 알아서\
+결과값을 리턴해준다. 복잡한 것을 의식하지 않도록 해주는 것이다. 여기서의 핵심은 인터페이스를 적게(less) 하는 것이다. 클래스 혹은 메소드가 많으면\
+개발자는 어떤것을 써야 할지 망설이게 되고 그만큼 메소드 혹은 클래스 사용에 대해 주의할 수 밖에 없게 된다. \
+\
+클래스를 설계할 때 어떤 메소드를 public 으로 사용할 것인지에 대한 고민도 필요하다. 만약 너무 많은 메소드가 public 으로 사용된다면, 클래스 내부의 수정이\
+힘들게 된다. 필드 또한 public으로 하면 다른 클래스에서 해당 필드를 참조할 수도 있게 되기 때문에 수정이 어려워지게 된다. 패키지 역시 클래스를 많이\
+노출시키면 패키지 내부 수정이 힘들어지게 된다.\
+\
+
