@@ -13,4 +13,13 @@
 **client = 우리 서비스**\
 **resource owner = 사용자**\
 **resource server = SNS 서버**\
-라고 생각하면 된다. client 가 우리 서비스라는게 조금 이상해 보일텐데, 아래 설명을 확인하고 나면 이해하게 될 것이다.\
+라고 생각하면 된다. 연동 순서는 일단 네이버와 카카오 연동 기준으로 작성해본다.
+
+1. resource owner(이하 RO) 가 client 에 SNS 로그인 버튼을 클릭한다.
+2. client 는 resource server(이하 RS) 에 로그인 할 수 있는 URL 을 호출한다.
+3. 각 RS 별 사용자 인증을 거쳐 client 에 제공해줄 정보들에 대한 동의를 RO 에게 얻는다.
+4. 모든 동의를 얻으면 RS는 access token 을 얻을 수 있는 코드를 client 에 리턴해준다.
+5. client 는 해당 코드를 이용하여 access token 을 획득한다.
+6. client 는 획득한 access token 을 이용 하여 사용자 정보를 조회한다.
+7. 만일 사용자가 client 에 가입한 사용자면 로그인을, 가입하지 않았다면 client 의 회원가입 처리를 진행한다.
+
