@@ -19,3 +19,27 @@ Mediator 이란 단어는 '조정자', '중개자'라는 뜻을 갖고 있다. �
 > 사용자명에 한글자라도 들어가면 패스워드칸 활성화\
 > 사용자명과 패스워드 모두 입력되어있을 때만 OK 버튼 활성화. 이외에는 비활성화\
 > Cancel 버튼은 항상 활성화\
+
+예제에서는 라디오버튼, 텍스트 필드 그리고 버튼이 모두 각각 다른 클래스로 이루어져 있다. 이렇게 될 경우 위의 로직들을 클래스마다 분산시키면 개발 난이도가 \
+상당히 올라가게 된다. 오브젝트들이 서로 연관 되어있기 때문이다. 이렇게 다수 오브젝트들의 관계를 조정해야 할때 바로 Mediator 패턴을 사용하면 된다.\
+표시 컨트롤에 대한 로직들을 모두 중개인 안에 개발하고, 오브젝트들이 중개인과만 통신하면 되는 것이다.
+
+```java
+public interface Mediator {
+    public abstract void createColleagues();
+    public abstract void colleagueChanged();
+}
+```
+Mediator 인터페이스는 중개인 역할을 한다. 중개인 역할을 하는 클래스들은 이 인터페이스를 상속받아서 구현된다. createColleagues 메소드는 Mediator 가\
+관리하는 회원을 생성하는 메소드이다. colleagueChanged 메소드는 중개인에 대한 상담에 해당하며, 상태값등이 변할 때 호출된다.
+
+```java
+public interface Colleague {
+    public abstract void setMediator(Mediator mediator);
+    public abstract void setColleagueEnabled(boolean enabled);
+}
+```
+Colleague 인터페이스는 중개인에게 상담을 의뢰하는 회원 역할을 하는 인터페이스이다. setMediator 메소드는 중개인을 세팅하는 메소드로, 로그인 프레임이 \
+호출하는 메소드이다. setColleagueEnabled 는 중개인이 내리는 지시에 해당한다. enabled 값이 true 면 자기자신을 유효상태, false 면 무효로 판단한다. \
+이 메소드는 중개인의 판단에 따라 결정된다. 여기서는 Mediator 인터페이스에 상태값이 변하는 메소드(colleagueChanged)를 두었고, Colleague 쪽에\
+중개인의 지시메소드(setColleagueEnabled)를 두었지만, 이는 어플리케이션에 따라 어디 위치에 둘 지 달라질 수 있다.
