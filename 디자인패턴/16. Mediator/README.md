@@ -43,3 +43,47 @@ Colleague 인터페이스는 중개인에게 상담을 의뢰하는 회원 역�
 호출하는 메소드이다. setColleagueEnabled 는 중개인이 내리는 지시에 해당한다. enabled 값이 true 면 자기자신을 유효상태, false 면 무효로 판단한다. \
 이 메소드는 중개인의 판단에 따라 결정된다. 여기서는 Mediator 인터페이스에 상태값이 변하는 메소드(colleagueChanged)를 두었고, Colleague 쪽에\
 중개인의 지시메소드(setColleagueEnabled)를 두었지만, 이는 어플리케이션에 따라 어디 위치에 둘 지 달라질 수 있다.
+
+```java
+import java.awt.Button;
+
+public class ColleagueButton extends Button implements Colleague {
+    private Mediator mediator;
+    public ColleagueButton(String caption){
+        super(caption);
+    }
+    public void setMediator(Mediator mediator){
+        this.mediator = mediator;
+    }
+    public void setColleagueEnabled(boolean enabled){
+        setEnabled(enabled);
+    }
+}
+```
+ColleagueButton 클래스는 Button 클래스의 하위 클래스면서 Colleague 인터페이스를 구체화하는 클래스이다. mediator 필드는 setMediator 에서 넘어온\
+Mediator 오브젝트를 저장해준다. setColleagueEnabled는 JAVA GUI에 정의되어있는 setEnabled 메소드를 호출하여 유효와 무효를 설정한다.
+setEnabled(true) 면 버튼이 활성화 되지만, setEnabled(false)면 버튼이 비활성화된다.
+
+```java
+import java.awt.TextField;
+import java.awt.Color;
+import java.awt.event.TextListener;
+import java.awt.event.TextEvent;
+
+public class ColleagueTextField extends TextField implements TextListener, Collegue{
+    private Mediator mediator;
+    public ColleagueTextField(String text, int columns){
+        super(text, columns);
+    }
+    public void setMediator(Mediator mediator){
+        this.mediator = mediator;
+    }
+    public void setColleagueEnabled(boolean enabled){
+        setEnabled(enabled);
+        setBackground(enabled ? Color.white:Color.lightGrey);
+    }
+    public void textValueChanged(TextEvent e){
+        mediator.colleagueChanged();
+    }
+}
+```
