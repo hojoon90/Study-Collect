@@ -49,12 +49,15 @@ import java.awt.Button;
 
 public class ColleagueButton extends Button implements Colleague {
     private Mediator mediator;
+    
     public ColleagueButton(String caption){
         super(caption);
     }
+    
     public void setMediator(Mediator mediator){
         this.mediator = mediator;
     }
+    
     public void setColleagueEnabled(boolean enabled){
         setEnabled(enabled);
     }
@@ -72,18 +75,93 @@ import java.awt.event.TextEvent;
 
 public class ColleagueTextField extends TextField implements TextListener, Collegue{
     private Mediator mediator;
+    
     public ColleagueTextField(String text, int columns){
         super(text, columns);
     }
+    
     public void setMediator(Mediator mediator){
         this.mediator = mediator;
     }
+    
     public void setColleagueEnabled(boolean enabled){
         setEnabled(enabled);
         setBackground(enabled ? Color.white:Color.lightGrey);
     }
+    
     public void textValueChanged(TextEvent e){
         mediator.colleagueChanged();
+    }
+}
+```
+ColleagueTextField 클래스는 ColleagueButton 처럼 TextField 클래스의 하위클래스이다. 또한 TextListener 인터페이스도 같이 구현하고 있다.\
+이 클래스는 텍스트의 내용이 변했을 때 textValueChanged 에서 변화를 감지하기 위해서이다.\
+setColleagueEnabled 메소드는 두개의 메소드를 호출하는데, setEnabled 메소드는 위에서 사용한 기능과 동일하며, setBackground는 유효값일 경우\
+배경이 흰색, 무효일 경우 밝은회색으로 표시한다.\
+textValueChanged 는 위에서 설명한 것 처럼 텍스트의 내용이 변했을 때 감지하는 메소드인데, 변경을 감지하면 Mediator의 colleagueChanged 메소드를\
+호출하여 변화를 알린다.
+
+```java
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+
+public class ColleagueCheckbox extends Checkbox implements ItemListener,Colleague {
+    private Mediator mediator;
+
+    public ColleagueCheckbox(String caption, CheckboxGroup group, boolean state) {
+        super(caption, group, state);
+    }
+
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
+    }
+
+    public void setColleagueEnabled(boolean enabled) {
+        setEnabled(enabled);
+    }
+
+    public void itemStateChanged(ItemEvent e) {
+        mediator.colleagueChanged();
+    }
+}
+```
+ColleagueCheckbox도 위의 두 클래스와 거의 유사하다. 예제에서는 체크박스 대신 라디오버튼이 사용된다(CheckboxGroup 을 이용)
+
+```java
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.Color;
+import java.awt.CheckboxGruop;
+import java.awt.GridLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class LoginFrame extends Frame implements ActionListener, Mediator {
+    private ColleagueCheckbox checkGuest;
+    private ColleagueCheckbox checkLogin;
+    private ColleagueTextField textUser;
+    private ColleagueTextField textPass;
+    private ColleagueButton buttonOk;
+    private ColleagueButton buttonCancel;
+    
+    public LoginFrame(String title){
+        super(title);
+        setBackground(Color.lightGray);
+        setLayout(new GridLayout(4, 2));
+        createColleagues();
+        add(checkGuest);
+        add(checkLogin);
+        add(new Label("Username: "));
+        add(textUser);
+        add(new Label("Password: "));
+        add(textPass);
+        add(buttonOk);
+        add(buttonCancel);
+        colleagueChanged();
+        pack();
+        show();
     }
 }
 ```
