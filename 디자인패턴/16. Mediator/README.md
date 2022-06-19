@@ -73,7 +73,7 @@ import java.awt.Color;
 import java.awt.event.TextListener;
 import java.awt.event.TextEvent;
 
-public class ColleagueTextField extends TextField implements TextListener, Collegue{
+public class ColleagueTextField extends TextField implements TextListener, Colleague{
     private Mediator mediator;
     
     public ColleagueTextField(String text, int columns){
@@ -86,7 +86,7 @@ public class ColleagueTextField extends TextField implements TextListener, Colle
     
     public void setColleagueEnabled(boolean enabled){
         setEnabled(enabled);
-        setBackground(enabled ? Color.white:Color.lightGrey);
+        setBackground(enabled ? Color.white:Color.lightGray);
     }
     
     public void textValueChanged(TextEvent e){
@@ -133,7 +133,7 @@ ColleagueCheckbox도 위의 두 클래스와 거의 유사하다. 예제에서�
 import java.awt.Frame;
 import java.awt.Label;
 import java.awt.Color;
-import java.awt.CheckboxGruop;
+import java.awt.CheckboxGroup;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -163,5 +163,97 @@ public class LoginFrame extends Frame implements ActionListener, Mediator {
         pack();
         show();
     }
+    
+    public void createColleagues(){
+        CheckboxGroup g = new CheckboxGroup();
+        checkGuest = new ColleagueCheckbox("Guest", g, true);
+        checkLogin = new ColleagueCheckbox("Login", g, false);
+        textUser = new ColleagueTextField("", 10);
+        textPass = new ColleagueTextField("", 10);
+        textPass.setEchoChar('*');
+        buttonOk = new ColleagueButton("OK");
+        buttonCancel = new ColleagueButton("Cancel");
+        
+        checkGuest.setMediator(this);
+        checkLogin.setMediator(this);
+        textUser.setMediator(this);
+        textPass.setMediator(this);
+        buttonOk.setMediator(this);
+        buttonCancel.setMediator(this);
+        
+        checkGuest.addItemListener(checkGuest);
+        checkLogin.addItemListener(checkLogin);
+        textUser.addTextListener(textUser);
+        textPass.addTextListener(textPass);
+        buttonOk.addActionListener(this);
+        buttonCancel.addActionListener(this);
+    }
+    
+    public void colleagueChanged(){
+        if(checkGuest.getState()){
+            textUser.setColleagueEnabled(false);
+            textPass.setColleagueEnabled(false);
+            buttonOk.setColleagueEnabled(true);
+        } else {
+            textUser.setColleagueEnabled(true);
+            userpassChanged();
+        }
+    }
+    
+    private void userpassChanged(){
+        if(textUser.getText().length() > 0){
+            textPass.setColleagueEnabled(true);
+            if(textPass.getText().length() > 0){
+                buttonOk.setColleagueEnabled(true);
+            }else{
+                buttonOk.setColleagueEnabled(false);
+            }
+        }else{
+            textPass.setColleagueEnabled(false);
+            buttonOk.setColleagueEnabled(false);
+        }
+    }
+    public void actionPerformed(ActionEvent e){
+        System.out.println(e.toString());
+        System.exit(0);
+    }
 }
 ```
+LoginFrame 클래스는 Frame 클래스의 하위 클래스로서 Mediator 인터페이스를 구현하고 있다. 위의 생성자에서는 다음과 같은 일을 하고 있다.
+
+> 배경색의 설정\
+> 레이아웃 매니저의 설정(내부 윈도우를 세로 4 X 가로 2로 배치한다)\
+> createColleagues 메소드에서 Colleague 생성\
+> Colleague의 배치\
+> 초기상태의 설정\
+> 표시
+
+createColleagues 메소드는 이 창을 만드는데 필요한 Colleague들을 생성하고 그걸 변수에 저장하고 있다. 또 각 변수마다 setMediator를 호출하여 중개인 \
+세팅을 진행해준다. createColleagues 메소드에서는 각 Listener의 설정도 수행한다. 이는 각각 awt의 프레임워크로부터 적절하게 호출되도록 하기 위함이다.\
+\
+여기서 제일 중요한 메소드는 colleagueChanged() 이다. 여기서는 각 조건에 따른 표시 설정을 하게 된다. 예제에서 만들었던 ColleagueButton,\ 
+ColleagueTextField, ColleagueCheckbox 모두 유효/무효를 세팅해주는 메소드만 있을 뿐 조건에 따라 처리하는 로직은 따로 존재하지 않는다.\
+모든 Collegue의 조건에 대한 로직은 colleagueChanged 메소드에서 처리하게 되는 것이다.\
+
+```java
+public class Main{
+    public static void main(String[] args){
+        new LoginFrame("Mediator Sample");
+    }
+}
+```
+Main 클래스에서는 LoginFrame 클래스의 인스턴스를 생성한다. 
+
+완성된 로그인창은 아래와 같다.
+![loginFrame](./images/loginFrame.png)
+
+### 패턴 사용시 고려해볼 점
+Mediator 에서 고려해볼 점은 로직 분산에 대한 점이다. 예제 프로그램을 보면 LoginFrame 클래스 안의 colleagueChanged 에서 복잡한 로직을 처리한다. \
+만약 이 조건에 따른 로직처리 중 버그가 발생하면 어떻게 될까? 물론 colleagueChanged 메소드 안에서 디버그를 실행해보면 된다. 만약에 로직이 각 클래스마다\
+분산되어 있으면 디버그가 상당히 어렵게 될 것이다. 보통 우리는 오브젝트를 분산시키려고 하지만 이처럼 한 곳에 모아야 할 것은 모으는 것이 오히려 더 현명한 방법이\
+될 수도 있다.\
+\
+이 패턴에서는 재활용 할 수 있는 클래스와 재활용이 어려운 클래스가 있는데, 만약 우리가 새로운 창을 하나 만든다고 가정해보자. 여기서 우리는 ColleagueButton,\
+ColleagueTextField, ColleagueCheckbox는 새로운 창에서도 사용이 가능하다. 이 클래스들의 역할은 단지 버튼, 텍스트 필드, 버튼을 구성하는 클래스들로\
+특별히 어디에 의존하는 클래스들이 아니기 때문에 재이용이 가능하다. 반대로 LoginFrame 클래스는 로그인 창을 만들기 위한 클래스인데, 이는 로그인 창 구성에\
+의존적이기 때문에 재이용이 어렵다. 
