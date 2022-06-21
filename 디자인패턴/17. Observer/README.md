@@ -22,7 +22,7 @@ update 메소드는 수를 생성하는 클래스인 NumberGenerator에서 호�
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public abstract class NumberGenerator(){
+public abstract class NumberGenerator {
     private ArrayList observers = new ArrayList();
     public void addObserver(Observer observer){
         observers.add(observer);
@@ -41,3 +41,74 @@ public abstract class NumberGenerator(){
     public abstract void execute();
 }
 ```
+NumberGenerator 클래스는 수를 생성하는 추상클래스이다. 실제 수를 조회하는 메소드와 수를 생성하는 메소드는 하위 클래스에서 처리하도록 추상메소드로\
+되어있다. observers 필드는 NumberGenerator 의 변화를 관찰하는 Observer를 리스트로 보관하는 변수이다. add 와 delete는 각각 observer 를 추가하거나\
+삭제하는 메소드이며, notifyObservers는 변화 상태를 옵저버들에게 전달하는 메소드이다. while문을 통해 모든 옵저버에게 update를 실행하는 것을 볼 수 있다.
+
+```java
+import java.util.Random;
+
+public class RandomNumberGenerator extends NumberGenerator {
+    private Random random = new Random();
+    private int number;
+    public int getNumber() {
+        return number;
+    }
+    public void execute() {
+        for (int i = 0; i < 20; i++) {
+            number = random.nextInt(50);
+            notifyObservers();
+        }
+    }
+}
+```
+RandomNumberGenerator 클래스는 랜덤 번호를 생성하는 클래스로, NumberGenerator 클래스의 하위 클래스이다. random 변수는 Random 인스턴스가, \
+number 변수는 현재 랜덤 번호값이 저장된다. execute 메소드는 랜덤번호를 생성하는 메소드이며 notifyObservers()메소드를 통해 랜덤 번호가 발생할 때 마다 \
+옵저버에 통보한다.
+
+```java
+public class DigitObserver implements Observer {
+    public void update(NumberGenerator generator){
+        System.out.println("DigitObserver: " + generator.getNumber());
+        try{
+            Thread.sleep(100);
+        }catch (InterruptedException e){
+        }
+    }
+}
+```
+DigitObserver 클래스는 Observer 인터페이스가 구현된 클래스이며 관찰한 수를 숫자로 표시하는 클래스이다. update 메소드를 통해 인수로 주어진\
+NumberGenerator의 getNumber를 통해 수를 얻어와서 표시한다. 여기서 Thread 는 숫자 표시를 잘 볼 수 있도록 걸어놓은 것이다.
+
+```java
+public class GraphObserver implements Observer{
+    public void update(NumberGenerator generator){
+        System.out.println("GraphObserver:");
+        int count = generator.getNumber();
+        for (int i = 0; i < count; i++) {
+            System.out.println("*");
+        }
+        System.out.println("");
+        try{
+            Thread.sleep(100);
+        }catch (InterruptedException e){
+        }
+    }
+}
+```
+GraphObserver 클래스는 위의 DigitObserver 와 크게 다르진 않으며, 간이그래프로 수를 표시한다.
+
+```java
+public class Main{
+    public static void main(String[] args){
+        NumberGenerator generator = new RandomNumberGenerator();
+        Observer observer1 = new DigitObserver();
+        Observer observer2 = new GraphObserver();
+        generator.addObserver(observer1);
+        generator.addObserver(observer2);
+        generator.execute();
+    }
+}
+```
+Main 클래스에서는 RandomNumberGenerator 인스턴스를 하나 만들고 거기에 각각 DigitObserver과 GraphObserver를 추가해준다. 그 후 execute를 통해\
+수를 생성한다.
