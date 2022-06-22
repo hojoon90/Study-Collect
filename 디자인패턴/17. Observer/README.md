@@ -112,3 +112,20 @@ public class Main{
 ```
 Main 클래스에서는 RandomNumberGenerator 인스턴스를 하나 만들고 거기에 각각 DigitObserver과 GraphObserver를 추가해준다. 그 후 execute를 통해\
 수를 생성한다.
+
+실행 결과는 아래와 같다.
+
+### 패턴 사용 시 고려할 사항
+옵저버 패턴 역시 클래스 간의 교환이 유연하다. 위 예시 코드들을 잘 보자. RandomNumberGenerator 클래스는 현재 자신을 관찰하는 클래스가 \
+DigitObserver 클래스인지 GraphObserver 클래스인지 알 필요가 없다. 하지만 부모 클래스인 NumberGenerator 안의 observer 필드에 \
+Observer 인터페이스가 구현되어 있다는 것은 알고 있다. 이 인스턴스들은 addObserver 메소드에서 추가된 것이므로 반드시 Observer 인터페이스가 \
+구현되어 있으며 update 메소드를 이용해 호출 할 수 있다. 또한 DigitObserver 와 GraphObserver 클래스는 자신이 보고 있는 NumberGenerator 클래스가 \
+Random 인지 다른 클래스인지 역시 알 필요가 없다. 단지 NumberGenerator 의 하위 클래스의 인스턴스이며 getNumber 메소드를 갖고 있다는 것만 알고 있다.\
+구현 클래스들과 추상 클래스를 분리하여 사용하며 각 클래스에서 보듯이 인수들을 받는 부분을 추상 클래스 혹은 인터페이스로 사용하고 있다.\
+이는 곧 클래스간의 교환이 유연하다고 볼 수 있다.
+
+예제 프로그램은 먼저 등록된 Observer 클래서가 먼저 호출 된다. 일반적으로 Observer 클래스가 여러개 등록되어있어도 update 메소드가 호출되는 순서가 \
+변경되어도 문제가 없어야 한다. 각 클래스의 독립성이 보장되면 의존성의 혼란이 발생하진 않지만 만약 옵저버의 update 호출로 인해 상태가 변화한다면 문제가\
+발생할 수 있다. 예를 들어 NumberGenerator 클래스에서 update 메소드를 호출할 때 Observer 가 NumberGenerator 클래스의 호출을 요청하는 경우도 있다.\
+이럴 경우 무한루프 상태에 빠지게 된다. (NumberGenerator가 변화 -> Observer에 알림 -> Observer가 다시 NumberGenerator를 호출하며 상태 변화\
+-> 상태 변화로 인해 Observer에 알림...) 이와 같은 상황을 방지하려면 상태값을 알수 있는 플래그 값이 있으면 위와같은 상황을 막을 수 있다.
