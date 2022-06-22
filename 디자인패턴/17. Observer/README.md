@@ -114,6 +114,68 @@ Main 클래스에서는 RandomNumberGenerator 인스턴스를 하나 만들고 �
 수를 생성한다.
 
 실행 결과는 아래와 같다.
+> DigitObserver: 39\
+> GraphObserver:\
+> ***************************************\
+> DigitObserver: 38\
+> GraphObserver:\
+> **************************************\
+> DigitObserver: 44\
+> GraphObserver:\
+> ********************************************\
+> DigitObserver: 29\
+> GraphObserver:\
+> *****************************\
+> DigitObserver: 12\
+> GraphObserver:\
+> ************\
+> DigitObserver: 4\
+> GraphObserver:\
+> ****\
+> DigitObserver: 9\
+> GraphObserver:\
+> *********\
+> DigitObserver: 34\
+> GraphObserver:\
+> **********************************\
+> DigitObserver: 21\
+> GraphObserver:\
+> *********************\
+> DigitObserver: 26\
+> GraphObserver:\
+> **************************\
+> DigitObserver: 29\
+> GraphObserver:\
+> *****************************\
+> DigitObserver: 38\
+> GraphObserver:\
+> **************************************\
+> DigitObserver: 0\
+> GraphObserver:\
+>\
+> DigitObserver: 15\
+> GraphObserver:\
+> ***************\
+> DigitObserver: 41\
+> GraphObserver:\
+> *****************************************\
+> DigitObserver: 40\
+> GraphObserver:\
+> ****************************************\
+> DigitObserver: 49\
+> GraphObserver:\
+> *************************************************\
+> DigitObserver: 1\
+> GraphObserver:\
+> *\
+> DigitObserver: 23\
+> GraphObserver:\
+> ***********************\
+> DigitObserver: 23\
+> GraphObserver:\
+> ***********************\
+> \
+> Process finished with exit code 0
 
 ### 패턴 사용 시 고려할 사항
 옵저버 패턴 역시 클래스 간의 교환이 유연하다. 위 예시 코드들을 잘 보자. RandomNumberGenerator 클래스는 현재 자신을 관찰하는 클래스가 \
@@ -122,10 +184,26 @@ Observer 인터페이스가 구현되어 있다는 것은 알고 있다. 이 인
 구현되어 있으며 update 메소드를 이용해 호출 할 수 있다. 또한 DigitObserver 와 GraphObserver 클래스는 자신이 보고 있는 NumberGenerator 클래스가 \
 Random 인지 다른 클래스인지 역시 알 필요가 없다. 단지 NumberGenerator 의 하위 클래스의 인스턴스이며 getNumber 메소드를 갖고 있다는 것만 알고 있다.\
 구현 클래스들과 추상 클래스를 분리하여 사용하며 각 클래스에서 보듯이 인수들을 받는 부분을 추상 클래스 혹은 인터페이스로 사용하고 있다.\
-이는 곧 클래스간의 교환이 유연하다고 볼 수 있다.
-
+이는 곧 클래스간의 교환이 유연하다고 볼 수 있다.\
+\
 예제 프로그램은 먼저 등록된 Observer 클래서가 먼저 호출 된다. 일반적으로 Observer 클래스가 여러개 등록되어있어도 update 메소드가 호출되는 순서가 \
 변경되어도 문제가 없어야 한다. 각 클래스의 독립성이 보장되면 의존성의 혼란이 발생하진 않지만 만약 옵저버의 update 호출로 인해 상태가 변화한다면 문제가\
 발생할 수 있다. 예를 들어 NumberGenerator 클래스에서 update 메소드를 호출할 때 Observer 가 NumberGenerator 클래스의 호출을 요청하는 경우도 있다.\
 이럴 경우 무한루프 상태에 빠지게 된다. (NumberGenerator가 변화 -> Observer에 알림 -> Observer가 다시 NumberGenerator를 호출하며 상태 변화\
--> 상태 변화로 인해 Observer에 알림...) 이와 같은 상황을 방지하려면 상태값을 알수 있는 플래그 값이 있으면 위와같은 상황을 막을 수 있다.
+-> 상태 변화로 인해 Observer에 알림...) 이와 같은 상황을 방지하려면 상태값을 알수 있는 플래그 값이 있으면 위와같은 상황을 막을 수 있다.\
+\
+NumberGenerator 는 update 메소드를 사용해서 갱신되었다고 Observer에게 알려주고 있다. update 메소드에 NumberGenerator 인수만을 넘겨주고 Observer\
+는 update 메소드 안에서 getNumber 메소드를 통해 숫자를 얻어내고 있다. 하지만 굳이 NumberGenerator 를 넘겨주지 않고 바로 숫자를 넘겨주어도 상관이 없다.\
+
+> void update(NumberGenerator generator, int number);
+
+또는
+
+> void update(int number);
+
+이런식으로 호출해도 되는 것이다. 일단 NumberGenerator 와 숫자 모두를 넘겨주는 것은 모든 정보를 넘겨주므로 update 메소드가 정보를 얻는 시간을 줄일 수\
+있다. 다만 이렇게 정보를 모두 준다는 것은 Observer에서 update 메소드의 처리 내용을 의식하고 있다고 볼 수 있다.\
+여기서 만든 예제 프로그램보다 복잡한 프로그램의 경우는 Observer에게 필요한 정보가 무엇인지 알기가 굉장히 어렵다. 그렇기 때문에 어느 정도의 정보를 update\
+메소드에게 제공할지는 프로그램의 복잡도에 따라 달라진다고 볼 수 있다.
+맨 아래 방법은 단순하게 숫자만 넘겨주는 메소드이다. 이럴 경우 코드는 간결해지지만, 한 Observer가 여러 오브젝트들을 관찰 한다면 저 숫자가 어느 오브젝트에서\
+넘어온지 모르기 때문에 사용하기에 부적절하다.
