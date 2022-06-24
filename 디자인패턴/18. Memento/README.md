@@ -22,6 +22,7 @@ Memento 패턴을 이용하여 만들 프로그램은 과일을 모으는 주사
 복원한다. 
 
 ```java
+package game;
 import java.util.*;
 
 public class Memento{
@@ -39,6 +40,48 @@ public class Memento{
     }
     List getFruits(){
         return (List)fruits.clone();
+    }
+}
+```
+Memento 클래스는 주인공의 상태를 표현하는 클래스이다. 주인공 클래스는 Gamer클래스인데, Gamer클래스와 Memento 클래스는 모두 같은 game 패키지에 \
+둔다. money 필드는 현재 갖고있는 돈이며 fruits는 현재 갖고있는 과일이다. Memento 클래스의 생성자는 public이 없다. 그래서 동일한 패키지에 있는 클래스에서만\
+사용이 가능하다.\
+addFruits 메소드도 public이 아닌데, 이는 game 패키지 외부에서 Memento 내부를 변경할 수 없도록 하기 위함이다.
+
+```java
+package game;
+import java.util.*;
+
+public class Gamer {
+    private int money;
+    private List fruits = new ArrayList();
+    private Random random = new Random();
+    private static String[] fruitsname = {
+            "사과","포도","바나나","귤"
+    };
+    private Gamer(int money){
+        this.money = money;
+    }
+    public int getMoney(){
+        return money;
+    }
+    public void bet() {
+        int dice = random.nextInt(6) + 1;
+        if (dice == 1) {
+            money += 100;
+            System.out.println("소지금이 증가하였습니다.");
+        } else if (dice == 2) {
+            money /= 2;
+            System.out.println("소지금이 절반이 되었습니다.");
+        } else if (dice == 6) {
+            String f = getFruit();
+            System.out.println("과일(" + f + ")을(를) 받았습니다.");
+        } else {
+            System.out.println("변한 것이 없습니다.");
+        }
+    }
+    public Memento createMemento() {
+        
     }
 }
 ```
