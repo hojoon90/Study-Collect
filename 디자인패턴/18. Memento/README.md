@@ -81,7 +81,73 @@ public class Gamer {
         }
     }
     public Memento createMemento() {
-        
+        Memento m = new Memento(money);
+        Iterator it = fruits.iterator();
+        while (it.hasNext()){
+            String f = (String) it.next();
+            if(f.startsWith("맛있는")){
+                m.addFruit(f);
+            }
+        }
+        return m;
+    }
+    public void restoreMemento(Memento memento){
+        this.money = memento.money;
+        this.fruits = memento.getFruits();
+    }
+    public String toString(){
+        return "[money = " + money + ", fruits = " + fruits + "]";
+    }
+    private String getFruit() {
+        String prefix = "";
+        if (random.nextBoolean()) {
+            prefix = "맛있는";
+        }
+        return prefix + fruitsname[random.nextInt(fruitsname.length)];
     }
 }
 ```
+Gamer 클래스는 주인공을 나타내는 클래스이다. 소지금, 과일 그리고 난수발생기를 갖고 있다. 그리고 클래스 필드로 fruitsname 변수를 갖고 있다. 여기서 제일\
+중요한 메소드는 bet 메소드인데, 이 bet 메소드 안에서 주인공의 소지금과 과일획득 유무를 처리한다.\
+createMemento 는 현재 상태를 저장하는 메소드이다. 여기서는 Memento를 만드는데, 현재 상태의 소지금과 과일들을 갖고 Memento 인스턴스를 생성하고 있다.\
+이렇게 생성된 Memento는 현재 주인공의 상태를 마치 저장하듯이 갖고 있는 것이다. restoreMemento는 createMemento 메소드의 반대로 undo를 실행시키는 \
+메소드이다. 제공된 Memento 메소드를 기초로 상태를 복원하는 역할을 한다.
+
+```java
+import game.Memento;
+import game.Gamer;
+
+public class Main {
+    public static void main(String[] args){
+        Gamer gamer = new Gamer(100);
+        Memento memento = gamer.createMemento();
+        for (int i = 0; i < 100; i++) {
+            System.out.println("==== " + i);
+            System.out.println("현상: " + gamer);
+            
+            gamer.bet();
+
+            System.out.println("소지금은 " + gamer.getMoney() + "원이 되었습니다.");
+            
+            if (gamer.getMoney() > memento.getMoney()){
+                System.out.println(" (많이 증가했으므로 현재의 상태를 저장하자)");
+                memento = gamer.createMemento();
+            } else if (gamer.getMoney() < memento.getMoney() / 2) {
+                System.out.println(" (많이 감소했으므로 이전의 상태로 복원하자)");
+                gamer.restoreMemento(memento);
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ie){
+                
+            }
+            System.out.println("");
+        }
+    }
+}
+```
+Main 클래스에서는 Gamer의 인스턴스를 생성해서 게임을 실행한다. 반복문을 톨애 gamer의 bet 메소드를 호출하여 상태 변화를 출력하고 있다. 다만 시작부분에서\
+gamer의 최초 Memento 인스턴스를 생성한 후, 금액에 따라 memento 를 저장 혹은 복원작업을 계속 진행한다.
+
+결과는 다음과 같다.
+
