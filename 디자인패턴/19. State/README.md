@@ -58,7 +58,13 @@ public class DayState implements State {
         context.recordLog("금고사용 (주간)");
     }
     public void doAlarm(Context context){
-        context.callSecurity
+        context.callSecurityCenter("비상벨 (주간)");
+    }
+    public void doPhone(Context context){
+        context.callSerucityCenter("일반통화 (주간)");
+    }
+    public String toString(){
+        return "[주간]";
     }
 }
 ```
