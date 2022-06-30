@@ -68,3 +68,50 @@ public class DayState implements State {
     }
 }
 ```
+DayState 클래스는 주간 상태를 나타내는 클래스이다. State 인터페이스를 구현하고 있으며 State 인터페이스에 선언 된 메소드들을 구현한다. 상태가\
+변화할 때 마다 인스턴스를 계속 생성하면 메모리와 시간이 낭비되기 때문에 클래스는 한 개씩만 인스턴스를 만들어 준다. 그렇기 때문에 상단에 singleton이 사용된\
+것을 볼 수 있다.\
+doClock 메소드는 시간을 설정하는 메소드이다. 변수의 hour가 야간 시간대이면 야간 상태로 인스턴스를 바꾸어 준다. context 에서 해당 로직을 실행하는데, 
+NightState 역시 싱글턴으로 인스턴스를 얻어오게 되어있다는 것을 볼 수 있다.\
+doUse, doAlarm, doPhone 모두 context 안의 메소드들을 호출하는 역할만 하고 있다. 해당 메소드들 안에 if 문이 없다는 것에 주목하자. 이 클래스에서 \
+사용되는 메소드들은 모두 주간상태일 때의 처리라는 것이기 때문에 별도의 if문이 존재하지 않는다.\
+
+```java
+public class NightState implements State {
+    private static NightState singleton = new NightState();
+    private NightState(){
+        
+    }
+    public static State getInstance(){
+        return singleton;
+    }
+    public void doClock (Context context, int hour){
+        if(9 <= hour && hour <= 17){
+            context.changeState(DayState.getInstance());
+        }
+    }
+    public void doUse(Context context){
+        context.recordLog("비상: 야간금고 사용!");
+    }
+    public void doAlarm(Context context){
+        context.callSecurityCenter("비상벨 (야간)");
+    }
+    public void doPhone(Context context){
+        context.callSerucityCenter("야간통화 녹음");
+    }
+    public String toString(){
+        return "[야간]";
+    }
+}
+```
+NightState 클래스는 야간의 상태를 나타내는 클래스이다. 위의 주간 상태 클래스와 크게 다르지 않으므로 바로 넘어간다.
+
+```java
+public interface Context{
+    public abstract void setClock(int hour);
+    public abstract void changeState(State state);
+    public abstract void callSecurityCenter(String msg);
+    public abstract void recordLog(String msg);
+}
+```
+Context 인터페이스는 상태를 관리하거나 경비센터를 호출하는 역할을 한다. 실제 역할은 아래 SafeFrame 클래스에서 다룬다.
