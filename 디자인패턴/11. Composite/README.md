@@ -109,7 +109,7 @@ Directory 클래스 안에 있는 엔트리들의 사이즈들을 다시 하나�
 이렇게 재귀적으로 디렉토리 안의 사이즈들을 계속 계산한다. Composite 패턴의 재귀적인 구조가 getSize 메소드 호출을 통해 간접적으로 보여지고 있다.\
 \
 add 메소드는 directory 리스트에 엔트리들을 저장하는 역할을 한다. printList 메소드는 디렉토리의 종류를 표시하는데, 이 역시 getSize와 마찬가지로
-재귀적인 호출을 하고 있다. 변수의 entry가 Directory 인지 File 인지도 따로 신경쓰지 않는다.\
+재귀적인 호출을 하고 있다. 변수의 entry가 Directory 인지 File 인지도 따로 신경쓰지 않는다.
 
 ### 예외처리와 Main 클래스
 ```java

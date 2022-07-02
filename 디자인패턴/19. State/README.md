@@ -115,3 +115,92 @@ public interface Context{
 }
 ```
 Context 인터페이스는 상태를 관리하거나 경비센터를 호출하는 역할을 한다. 실제 역할은 아래 SafeFrame 클래스에서 다룬다.
+
+```java
+import java.awt.*;
+
+public class SafeFrame extends Frame implements ActionListener, Context{
+    private TextField textClock = new TextField(60);
+    private TextArea textScreen = new TextArea(10, 60);
+    private Button buttonUse = new Button("금고 사용.");
+    private Button buttonAlarm = new Button("비상벨");
+    private Button buttonPhone = new Button("일반 통화");
+    private Button buttonExit = new Button("종료");
+    
+    private State state = DayState.getInstance();
+    
+    public SafeFrame(String title){
+        super(title);
+        setBackground(Color.lightGray);
+        setLayout(new BorderLayout());
+        add(textClock, BorderLayout.NORTH);
+        textClock.setEditable(false);
+        add(textScreen, BorderLayout.CENTER);
+        textScreen.setEditable(false);
+        
+        Panel panel = new Panel();
+        panel.add(buttonUse);
+        panel.add(buttonAlarm);
+        panel.add(buttonPhone);
+        panel.add(buttonExit);
+        
+        add(panel, BorderLayout.SOUTH);
+        
+        pack();
+        show();
+        
+        buttonUse.addActionListener(this);
+        buttonAlarm.addActionListener(this);
+        buttonPhone.addActionListener(this);
+        buttonExit.addActionListener(this);
+    }
+    
+    public void actionPerformed(ActionEvent e){
+        System.out.println(e.toString());
+        if(e.getSource() == buttonUse){
+            state.doUse(this);
+        }else if(e.getSource() == buttonAlarm){
+            state.doAlarm(this);
+        }else if(e.getSource() == buttonPhone){
+            state.doPhone(this);
+        }else if(e.getSource() == buttonExit){
+            System.exit(0);
+        }else{
+            System.out.println("?");
+        }
+    }
+    public void setClock(int hour){
+        String clockString = "현재 시간은";
+        if(hour < 10){
+            clockString += "0" + hour + ":00";
+        }else{
+            clockString += hour + ":00";
+        }
+        System.out.println(clockString);
+        textClock.setText(clockString);
+        state.doClock(this, hour);
+    }
+    public void changeState(State state){
+        System.out.println(this.state + "에서" + state +"로 상태가 변경되었습니다.");
+        this.state = state;
+    }
+    public void callSecurityCenter(String msg){
+        textScreen.append("call! " + msg + "\n");
+    }
+    public void recordLog(String msg){
+        textScreen.append("record ..." + msg + "\n");
+    }
+}
+```
+SafeFrame 클래스는 경비센터 모습을 GUI로 간이적으로 보여주는 클래스이다. Context 인터페이스를 구현하고 있다.\
+이 클래스 안에 있는 변수들은 화면상에 표시되는 입력 영역, 표시 영역 밑 버튼등의 부품이다. 그러나 state 변수는 금고의 현재 상태를 나타내주는 필드이다.
+처음에는 주간으로 세팅되어 있다.\
+생성자에서는 크게 네가지의 작업을 진행한다. 작업 내용들은 다음과 같다.
+> GUI 배경색상 설정 \
+> 레이아웃 구성 \
+> 변수들에 대해 세팅 \
+> 리스너 설정
+
+리스너는 각 버튼에서 addActionListener 메소드를 호출하여 Listener를 설정한다. 이 때 addActionListener 메소드 호출 시 넘겨주는 변수에 
+'버튼을 클릭했을 때 호출되는 인스턴스'를 넘겨준다. 이 때 넘겨주는 변수의 인스턴스는 ActionListener 인터페이스를 구현해주어야 한다.\
+여기에서는 this, 즉 SafeFrame 클래스를 변수로 넘겨주고 있다. SafeFrame은 ActionListener 인터페이스를 구현하고 있으므로 바로 인스턴스로 넘겨줄 수 있다.
