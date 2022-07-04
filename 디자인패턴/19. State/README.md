@@ -203,4 +203,33 @@ SafeFrame 클래스는 경비센터 모습을 GUI로 간이적으로 보여주�
 
 리스너는 각 버튼에서 addActionListener 메소드를 호출하여 Listener를 설정한다. 이 때 addActionListener 메소드 호출 시 넘겨주는 변수에 
 '버튼을 클릭했을 때 호출되는 인스턴스'를 넘겨준다. 이 때 넘겨주는 변수의 인스턴스는 ActionListener 인터페이스를 구현해주어야 한다.\
-여기에서는 this, 즉 SafeFrame 클래스를 변수로 넘겨주고 있다. SafeFrame은 ActionListener 인터페이스를 구현하고 있으므로 바로 인스턴스로 넘겨줄 수 있다.
+여기에서는 this, 즉 SafeFrame 클래스를 변수로 넘겨주고 있다. SafeFrame은 ActionListener 인터페이스를 구현하고 있으므로 바로 인스턴스로 넘겨줄 수 있다.\
+actionPerfomed 메소드는 버튼이 눌러졌을 때 호출되는 메소드이다. 이 메소드 안에서 어떤 버튼이 눌러졌는지 조사하여 그에 해당하는 처리를 진행한다. 여기서 버튼의 형태에 따라
+분기문이 이루어 지는데, 분기문 안에는 doUse 혹은 doAlarm 등의 메소드를 바로 호출하는 것을 볼 수 있다. 현재 상태가 무엇인지 따로 **확인하지 않고** 바로 메소드를 호출 하는데,
+이는 State 패턴의 특징이다. \
+setClock 메소드는 현재 시각을 지정한 시각으로 설정해주는 메소드이다. changeState 메소드는 DayState 와 NightState 내에서 실행되며 상태 전환이 일어날 때 호출되는 메소드이다.
+callSecurityCenter 는 경비센터 호출, recordLog 는 경비센터의 기록을 표현한다.
+
+```java
+public class Main {
+    public static void main(String[] args){
+        SafeFrame frame = new SafeFrame("State Sample");
+        while(true){
+            for (int hour = 0; hour < 24; hour++){
+                frame.setClock(hour);
+                try{
+                    Thread.sleep(1000);
+                }catch(InterruptedException ie){}
+            }
+        }
+    }
+}
+```
+Main 클래스에서는 SafeFrame 인스턴스를 생성하여 시간설정을 해준다. 여기선 1초마다 시간이 바뀌지만 프로그램 내에선 1초가 1시간이라고 가정한다.
+
+### 패턴 사용시 고려 사항
+프로그램 알고리즘 중 '분할정복'이라는 것이 있다. 말 그대로 세세하게 쪼개서 문제를 풀어나가는 방식이다. State 패턴도 각각의 상태들을 클래스로 만들어 분할한 것이다.
+위와 같은 상태가 2가지인 경우에는 별로 필요성이 없을 수 있지만 상태가 많은 경우는 State 패턴이 유용해진다. 예를들어 위에서 State 패턴을 사용하지 않으면 각 메소드에 대해
+상태에 대한 분기가 필요해지게 된다. 만약 상태가 많아지게 된다면 그에 대한 분기도 더욱 늘어날 것이다. 또한 비슷한 분기가 생길때마다 메소드들을 일일히 작성해주어야 한다.
+State 패턴을 사용하면 위와 같은 불편한 점들을 한번에 해결할 수 있다.\
+\
