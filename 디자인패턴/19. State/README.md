@@ -61,7 +61,7 @@ public class DayState implements State {
         context.callSecurityCenter("비상벨 (주간)");
     }
     public void doPhone(Context context){
-        context.callSerucityCenter("일반통화 (주간)");
+        context.callSecurityCenter("일반통화 (주간)");
     }
     public String toString(){
         return "[주간]";
@@ -97,7 +97,7 @@ public class NightState implements State {
         context.callSecurityCenter("비상벨 (야간)");
     }
     public void doPhone(Context context){
-        context.callSerucityCenter("야간통화 녹음");
+        context.callSecurityCenter("야간통화 녹음");
     }
     public String toString(){
         return "[야간]";
@@ -245,4 +245,12 @@ State 패턴에서는 상태에 의존한 처리를 **인터페이스에 추상�
 * 단점
   * 하나의 상태 클래스가 다른 상태 클래스의 역할에 대해 알고 있어야 함. (하나의 상태를 없애고 싶을 때 다른 상태도 같이 수정이 될 수 있음.)
 
-위와 같은 방법 대신 모든 상태 전환을 SafeFrame 클래스에서 처리할 수도 있다. 이렇게 되면 각각 상태 클래스의 독립성이 높아지게 된다.
+위와 같은 방법 대신 모든 상태 전환을 SafeFrame 클래스에서 처리할 수도 있다. 이렇게 되면 각각 상태 클래스의 독립성이 높아지게 된다.\
+\
+State 패턴은 또한 로직이 꼬일 염려가 없다. 만약 위의 상태들이 변수로 표현되고 있다고 생각해보자. 그럴 경우 각각의 변수의 값들이 제대로 컨트롤 되어야 자기모순에 빠지지 않는다.
+반면에 State 패턴을 사용하면 하나의 변수 값으로 상태를 확실하게 알 수 있기 때문에 자기 모순에 빠지지 않는다.\
+\
+새로운 상태를 추가하는것 역시 간단하다. 단지 State 인터페이스를 구현하는 클래스를 하나 더 만들어주면 되기 때문이다. 다만, 기존에 만들어져 있는 State 패턴에서
+상태 의존 처리를 추가하는 것은 힘들 수 있다. 인터페이스 안에 처리가 추가 되면 해당 인터페이스를 구현하고 있는 다른 모든 클래스들에 처리를 만들어주어야 하기 때문이다.
+만약 State 패턴을 사용하지 않는 다면 분기문 안에서 처리가 되어야 하는데, 분기문마다 전부 추가를 해주어야함은 물론이며 코드 실행 시 에러가 발생하면
+해당 에러가 어디부분에서 발생한 것인지 알기가 매우 힘들어진다.
