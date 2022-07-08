@@ -45,3 +45,28 @@ public class BigChar{
 BigChar 클래스는 '큰 문자'를 나타내는 클래스이다. 생성자에서 인수로 주어진 문자의 큰 문자 버전을 작성한다. 작성된 문자열은 fontData 변수에 저장된다. 
 큰 문자를 구성하고 있는 데이터는 파일로 준비한다. 만약 파일이 없을 경우 문자 뒤에 '?'를 붙여준다. 여기서는 아직 Flyweight 패턴중 공유에 대한 내용은 아직 나오지 않았다.
 공유에 대한 제어는 아래 나올 BigCharFactory 클래스에서 나온다.
+
+```java
+public class BigCharFactory{
+    //이미 만들어진 BigChar 인스턴스 관리
+    private HashMap pool = new HashMap();
+    //Singleton 패턴
+    private static BigCharFactory singleton = new BigCharFactory();
+    //생성자
+    private BigCharFactory(){
+    }
+    //인스턴스 get
+    public static BigCharFactory getInstance(){
+        return singleton();
+    }
+    //BigChar 인스턴스 생성
+    public synchronized BigChar getBigChar(char charName){
+        BigChar bc = (BigChar) pool.get("" + charName);
+        if(bc == null){
+            bc = new BigChar(charName); //BigChar 인스턴스 생성
+            pool.put("" + charName, bc);
+        }
+        return bc;
+    }
+}
+```
