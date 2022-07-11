@@ -18,10 +18,10 @@ public class BigChar{
     private char charName;
     //큰 문자를 표현하는 문자열 ('#' '.' '\n'의 열)
     private String fontData;
-    public Bigchar(char charName){
+    public BigChar(char charName){
         this.charName = charName;
         try{
-            BufferReader reader = new BufferReader(
+            BufferedReader reader = new BufferedReader(
                     new FileReader("big" + charName + ".txt")
             );
             String line;
@@ -57,7 +57,7 @@ public class BigCharFactory{
     }
     //인스턴스 get
     public static BigCharFactory getInstance(){
-        return singleton();
+        return singleton;
     }
     //BigChar 인스턴스 생성
     public synchronized BigChar getBigChar(char charName){
@@ -86,7 +86,7 @@ public class BigString {
     private BigChar[] bigChars;
     public BigString(String string){
         bigChars = new BigChar[string.length()];
-        BigcharFactory factory = BigCharFactory.getInstance();
+        BigCharFactory factory = BigCharFactory.getInstance();
         for(int i = 0; i< bigChars.length; i++){
             bigChars[i] = factory.getBigChar(string.charAt(i));
         }
@@ -120,3 +120,13 @@ Main 클래스에서는 입력받은 값을 출력해주는 역할만 하고 있
 Flyweight 패턴은 인스턴스를 공유하는 것이 핵심이다. 여기서 가장 주의해야할 점은 공유하고 있는 것을 변경하면 여러 곳에 영향이 미쳐진다는 것이다. 하나의 인스턴스를 변경하면
 그 인스턴스를 사용하고 있는 여러 장소에 영향이 미쳐지게 되는 것이다. 그렇기 때문에 Flyweight 역할을 하는 클래스에 제공하는 정보는 신중히 선택해야 한다.
 여러 장소에 공유시켜야 할 정보만을 제공하는 것이 좋다.
+
+공유시키는 정보와 공유시키지 않는 정보는 각각 intrinsic/extrinsic 이라고 한다. 먼저 공유시키는 정보 부터 설명하자면 **인스턴스를 어디에서 가지고 있더라고 변하지 않는 정보**
+즉, 상태에 의존하지 않는 정보를 나타낸다. 위의 예제코드 중 BigChar 클래스의 필드 데이터는 BigString의 어디에 등장해도 변하지 않는다. intrinsic한 정보인 것이다.
+반면 공유시키지 않는 정보인 extrinsic한 정보는 **인스턴스를 두는 장소에 따라 변화하는 정보,** 상태에 의존하는 정보이다. BigChar 인스턴스가 BigString의 몇 번째 문자인가 하는
+정보는 BigChar가 놓이는 장소에 따라 변하기 때문에 BigChar에게 제공할 수 없다. 이러한 정보는 extrinsic한 정보가 된다.
+
+이렇게 Flyweight 패턴을 사용하게 되면 인스턴스를 공유하게 되기 때문에 리소스를 줄일 수 있게 된다. 만약 우리가 인스턴스를 새로 생성하는 new가 일정 시간이 걸린다고 생각해보자.
+이렇게 선언할 때 마다 일정 시간이 흐르게 되는데 Flyweight 패턴을 사용하게 되면 인스턴스를 new 하는 수를 줄이면서 시간도 줄일 수 있게 되기 때문에 프로그램의 속도를
+올릴 수 있다.
+
