@@ -85,3 +85,24 @@ public class PrinterProxy implements Printable{
     }
 }
 ```
+PrinterProxy 클래스는 대리인의 역할을 수행하며 Printable 인터페이스를 구현한다. name 변수는 이름을, real 필드는 Printer 인스턴스를 저장한다. 생성자에서는
+이름을 설정한다. setPrinterName은 이름을 세팅하는 메소드이며, real 변수가 null이 아니면 인자로 받은 이름을 세팅해준다. real이 null 일 경우는 name만
+세팅해준다. print 메소드는 대리인의 역할을 벗어나기 때문에 실제 Printer 클래스 인스턴스를 생성하여 real.print() 메소드를 실행한다.아무리 setPrinterName 과
+getPrinterName 메소드를 호출해도 Printer 인스턴스는 생성되지 않는다. Printer 클래스 인스턴스는 실제 클래스가 필요할 경우에만 호출된다. realize 메소드는
+real 변수가 null 일 경우에만 인스턴스를 생성한다.\
+PrinterProxy 클래스는 Printer 클래스를 알고 있다. 왜냐하면 PrinterProxy 클래스는 real 변수가 Printer형이며 realize 메소드에서도 Printer 인스턴스를
+생성하기 때문이다. 이처럼 PrinterProxy 클래스는 Printer 클래스와 연관되어있는 클래스이다. 반면 Printer 클래스는 PrinterProxy 클래스의 존재를 전혀 모른다.
+
+```java
+public class Main {
+    public static void main(String[] args){
+        Printable p = new PrinterProxy("Alice");
+        System.out.println("이름은 현재" + p.getPrinterName() + "입니다.");
+        p.setPrinterName("Bob");
+        System.out.println("이름은 현재" + p.getPrinterName() + "입니다.");
+        p.print("Hello, World.");
+    }
+}
+```
+Main 클래스는 PrinterProxy 를 경유하여 Printer를 이용하는 클래스이다. 처음에 PrinterProxy 인스턴스 생성 후 이름을 출력하고, 다시 다른이름으로 세팅한 후 
+마지막에 Hello World 를 출력한다.
