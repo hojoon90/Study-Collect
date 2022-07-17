@@ -61,3 +61,94 @@ public class DrawCommand implements Command {
     }
 }
 ```
+DrawCommand 클래스는 '점 그리기 명령'을 표현한 클래스이며 Command 인터페이스를 구현하고 있다. drawable과 position 두개의 변수를 갖고 있으며, drawable은 그리기 대상을 지정하고
+position 필드는 그리기를 실행하는 위치를 나타낸다. Point 클래스는 x, y좌표를 가진 이차원 평면의 위치를 나타낸다. 생성자에서는 Drawble의 인스턴스와 Point 인스턴스를 
+받아서 변수에 대입해준다. 이를 통해 '이 위치에 점을 그려라'하는 명령을 만들고 있는 부분이다. execute 메소드에서는 drawable의 draw를 호출하고 있다. 이것이 명령을 실행하는 부분이다.
+
+```java
+public interface Drawable {
+    public abstract void draw(int x, int y);
+}
+```
+Drawable 인터페이스는 그림그리기 대상을 표현하는 것이다. draw는 그림을 그리는 메소드이며 좌표값을 인자로 받는다.
+
+```java
+public class DrawCanvas extends Canvas implements Drawable{
+    private Color color = Color.red;
+    private int radius = 6;
+    private MacroCommand history;
+    public DrawCanvas(int width, int height, MacroCommand history){
+        setSize(width, height);
+        setBackground(Color.white);
+        this.history = history;
+    }
+    public void paint(Graphics g){
+        history.execute();
+    }
+    public void draw(int x, int y){
+        Graphics g = getGraphics();
+        g.setColor(color);
+        g.fillOval(x - radius, y - radius, radius * 2, radius * 2);
+    }
+}
+```
+DrawCanvas 클래스는 Drawable 인터페이스를 구현하는 클래스이고 java.awt.Canvas 클래스의 하위 클래스이다. 그림 그리기 명령의 집합은 history 변수에 저장된다.
+생성자에서는 폭, 높이, 내용(history)을 받아서 DrawCanvas의 인스턴스를 초기화한다. setSize와 setBackground는 java.awt.Canvas의 메소드이며, 각각 크기와 배경색을 지정한다.
+paint 메소드는 DrawCanvas를 다시 그려야할 때 호출되는 메소드이다. history.execute메소드가 실행되면 history에 기록되어 있는 명령어들이 재실행된다.
+draw 메소드는 Drawable 인터페이스가 구현된 것이며 setColor로 색상이, fillOval로 원을 표시한다.
+
+```java
+public class Main extends JFrame implements ActionListener,
+MouseMotionListener, WindowListener{
+    private MacroCommand history = new MacroCommand();
+    private DrawCanvas canvas = new DrawCanvas(400, 400, history);
+    private JButton clearButton = new JButton("clear");
+    
+    public Main (String title){
+        super(title);
+        
+        this.addWindowListener(this);
+        canvas.addMouseMotionListener(this);
+        clearButton.addActionListener(this);
+        
+        Box buttonBox = new Box(BoxLayout.X_AXIS);
+        buttonBox.add(clearButton);
+        Box mainBox = new Box(BoxLayout.Y_AXIS);
+        mainBox.add(buttonBox);
+        mainBox.add(canvas);
+        getContentPane().add(mainBox);
+        
+        pack();
+        show();
+    }
+    
+    public void actionPerformed(ActionEvent e){
+        if (e.getSource() == clearButton){
+            history.clear();
+            canvas.repaint();
+        }
+    }
+    public void mouseMoved(MouseEvent e){
+    }
+    public void mouseDragged(MouseEvent e){
+        Command cmd = new DrawCommand(canvas, e.getPoint());
+        history.append(cmd);
+        cmd.execute();
+    }
+    
+    public void windowClosing(WindowEvent e){
+        System.exit(0);
+    }
+    public void windowActivated(WindowEvent e){}
+    public void windowClosed(WindowEvent e){}
+    public void windowDeactivated(WindowEvent e){}
+    public void windowDeiconified(WindowEvent e){}
+    public void windowIconified(WindowEvent e){}
+    public void windowOpened(WindowEvent e){}
+    
+    public static void main(String[] args){
+        new Main("Command Pattern Sample");
+    }
+}
+```
+Main 클래스는 예제프로그램을 동작시키기 위한 클래스이다.
