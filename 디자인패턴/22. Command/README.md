@@ -151,4 +151,15 @@ MouseMotionListener, WindowListener{
     }
 }
 ```
-Main 클래스는 예제프로그램을 동작시키기 위한 클래스이다.
+Main 클래스는 예제프로그램을 동작시키기 위한 클래스이다. history 변수는 그림그리기의 이력을 저장하는데, 나중에 DrawCanvas인스턴스에 전달하는것과 같다.
+canvas 필드는 그림을 그리는 영역이며, 초기값으로 400x400 값을 갖고 있다. clearButton 은그림을 그린점을 지우는 제거버튼이며, JButton은 javax.swing 패키지의
+클래스로 버튼을 표현한 것이다.
+
+생성자에서는 이벤트 리스너를 설정하여 그림을 그리는 컴포넌트를 레이아웃 하고 있다. buttonBox에 clearButton을 올리는데, 이때 버튼박스를 생성할 때 가로로 나열하기 위해
+BoxLayout.X_AXIS 를 넘겨준다. 그 후 mainBox를 생성해준 후 그 위에 buttonBox와 canvas를 올려놓는다. 그리고 마지막으로 JFrame에 mainBox를 올려놓는다.
+actionPerformed 메소드는 ActionListener 인터페이스를 구현하기 위한 것이며, clear 버튼이 눌렸을 때 이력을 지우고 다시 그림을 그리도록 실행한다.
+
+mouseMoved 메소드와 mouseDragged 메소드는 MouseMotionListener 인터페이스를 구현하기 위한 것이다. mouseMoved는 별다른 처리가 없으며, mouseDragged는
+마우스를 드래그했을 때 그 위치에 점을 그리라는 명령을 만들고 있다. 해당 명령은 history 에 추가되며, cmd.execute를 통해 바로 실행된다. 
+
+window들로 시작하는 메소드들은 WindowListener 인터페이스를 구현하기 위해 작성된 것이며 여기서는 종료처리에 대해서만 구현되어있다.
