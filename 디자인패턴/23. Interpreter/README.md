@@ -41,10 +41,55 @@ Interpreter 패턴은 프로그램이 해결하려는 문제를 간단한 '미�
 여기서 미니 언어의 문법을 확인해보자. 여기서 사용할 표기법은 'BNF'라고 불리는 것의 변형이다. 
 > &lt;program&gt; : : = program &lt;command list&gt;\
 > &lt;command list&gt; : : = &lt;command&gt;&#42; end\
-> &lt;program&gt; : : = program &lt;command list&gt;\
-> &lt;program&gt; : : = program &lt;command list&gt;\
+> &lt;command&gt; : : = &lt;repeat command&gt; | &lt;primitive command&gt;\
+> &lt;repeat command&gt; : : = repeat &lt;number&gt; &lt;command list&gt;\
+> &lt;primitive command&gt; : : = go | right | left
+
+하나씩 아래에서 살펴보자
 > &lt;program&gt; : : = program &lt;command list&gt;
-> 
-> 
-> 
-> 
+
+여기에서는 프로그램이라는 '&lt;program&gt;'을 정의한다. '&lt;program&gt;이란 program 이라는 단어 뒤에 커맨드 리스트인 &lt;command list&gt;가 이어진 것'을 나타낸 것이다.
+: : = 의 왼쪽이 정의되는 대상이며, 오른쪽이 정의되는 내용이다.
+
+> &lt;command list&gt; : : = &lt;command&gt;&#42; end
+
+여기는 커맨드리스트를 정의한다. '&lt;command list&gt;는 &lt;command&gt;가 0개이상 반복된 후 end가 오는 것'이라고 정의한다. * 는 바로 직전의 것을 0번이상 반복한다는 뜻이다.
+
+> &lt;command&gt; : : = &lt;repeat command&gt; | &lt;primitive command&gt;
+
+&lt;command&gt;는 반복 커맨드 &lt;repeat command&gt; 또는 기본 커맨드 &lt;primitive command&gt; 둘 중 하나 라고 정의하고 있다. | 는 '또는'을 나타낸다.
+
+> &lt;repeat command&gt; : : = repeat &lt;number&gt; &lt;command list&gt;
+
+&lt;repeat command&gt;는 repeat이라는 단어 뒤에 반복횟수 &lt;number&gt;가 이어지고 다시 &lt;command list&gt;가 이어진 것으로 정의하고 있다. 
+여기서 &lt;command&gt; 정의 중 &lt;repeat command&gt;가 사용되었으며, &lt;repeat command&gt; 정의 중에 &lt;command list&gt;가 사용되고 있다.
+이처럼 어떤 정의 도중에 자신이 등장하는 정의를 '재귀적인 정의'라고 한다.
+
+> &lt;primitive command&gt; : : = go | right | left
+
+기본 커맨드인 &lt;primitive command&gt;를 정의하고 있다. &lt;primitive command&gt;는 go 또는 left 또는 right 라고 정의하고 있다.
+
+### 예제 코드
+여기에서 만들 코드는 위의 미니 언어를 구문해석한 프로그램이다. 문자열로 구성된 미니 프로그램을 분해해서 각 부분이 어떤 구조로 되어있는지 해석하는 것이 구문해석이다.
+```java
+public abstract class Node{
+    public abstract void parse(Context context) throws ParseException;
+}
+```
+Node 클래스는 구문 트리의 각 부분을 구성하는 최상위 클래스이다. 여기에 선언된 parse 메소드는 '구문해석이라는 처리를 실행하기'위한 메소드이다. 해당 메소드는 
+Node 클래스를 상속 받는 클래스들에서 구현된다. 인자로 있는 context는 구문해석을 실행하고 있는 '상황'을 나타내는 클래스이다. 그리고 구문 해석중 예외가 발생할 경우
+ParseException 을 throw 한다.
+
+```java
+public class ProgramNode extends Node {
+    private Node commandListNode;
+    public void parse(Context context) throws ParseException {
+        context.skipToken("program");
+        commandListNode = new CommandListNode();
+        commandListNode.parse(context);
+    }
+    public String toString(){
+        return "[program " + commandListNode + ']';
+    }
+}
+```
