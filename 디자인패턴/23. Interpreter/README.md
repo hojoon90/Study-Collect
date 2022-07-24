@@ -93,3 +93,33 @@ public class ProgramNode extends Node {
     }
 }
 ```
+프로그램이라는 <program>을 나타내는 ProgramNode 클래스이다. 이 클래스에는 Node 형을 갖는 commandListNode 변수가 있다. 이 변수는 <command list> 에 대응하는
+구조를 저장하기 위한 것이다. parse 메소드에서는 인자로 들어오는 context에서 program 이라는 단어를 건너뛰고 있다.(skipToken 메소드) 그리고 만약 program이라는 단어가
+없다면 ParseException 예외를 던진다. 그리고 commandListNode 의 parse 메소드를 호출한다. <command list>가 어떤 내용으로 되어있는지는 ProgramNode 클래스의 메소드에는
+기술되어있지 않다. toString 메소드는 이 노드의 문자열 표현을 기술하기 위한 것이다. 
+
+```java
+public class CommandListNode extends Node {
+    private ArrayList list = new ArrayList();
+    public void parse(Context context) throws ParseException{
+        while(true){
+            if(context.currentToken() == null){
+                throw new ParseException("missing 'end'");
+            }else if(context.currentToken().equals("end")){
+                context.skipToken("end");
+            }else{
+                Node commandNode = new CommandNode();
+                commandNode.parse(context);
+                list.add(commandNode);
+            }
+        }
+    }
+    public String toString(){
+        return list.toString();
+    }
+}
+```
+다음은 <command list>를 나타내는 CommandListNode 클래스이다. <command list>는 <command>가 0번 이상 반복하고 마지막에 end 가 온다. 반복하는 <command>를
+저장하기 위해 CommandListNode 클래스는 list를 갖고 있다. 이 필드에 CommandNode 클래스의 인스턴스를 저장한다. parse 메소드에서는 인자로 넘어온 context의
+currentToken()의 값이 null이면 이미 남아있는 토큰은 없게 되는 것이므로 ParseException에 end가 없다는 메세지를 붙여 예외를 던진다. 그리고 만약 현재의 토큰이
+end 이면, <commend list>의 마지막에 도달했다는 것이며, 이때는 end 를 건너뛰고 나서 while문을 break한다.
