@@ -123,3 +123,21 @@ public class CommandListNode extends Node {
 저장하기 위해 CommandListNode 클래스는 list를 갖고 있다. 이 필드에 CommandNode 클래스의 인스턴스를 저장한다. parse 메소드에서는 인자로 넘어온 context의
 currentToken()의 값이 null이면 이미 남아있는 토큰은 없게 되는 것이므로 ParseException에 end가 없다는 메세지를 붙여 예외를 던진다. 그리고 만약 현재의 토큰이
 end 이면, <commend list>의 마지막에 도달했다는 것이며, 이때는 end 를 건너뛰고 나서 while문을 break한다.
+
+```java
+public class CommandNode extends Node {
+    private Node node;
+    public void parse(Context context) throws ParseException {
+        if(context.currentToken().equals("repeat")){
+            node = new RepeatCommandNode();
+            node.parse(context);
+        }else{
+            node = new PrimitiveCommandNode();
+            node.parse(context);
+        }
+    }
+    public String toString(){
+        return node.toString();
+    }
+}
+```
