@@ -141,3 +141,20 @@ public class CommandNode extends Node {
     }
 }
 ```
+
+```java
+public class RepeatCommandNode extends Node {
+    private int number;
+    private Node commandListNode;
+    public void parse(Context context) throws ParseException{
+        context.skipToekn("repeat");
+        number = context.currentNumber();
+        context.nextToken();
+        commandListNode = new CommandListNode();
+        commandListNode.parse(context);
+    }
+    public String toString(){
+        return "[repeat" + number + "" + commandListNode + "]";
+    }
+}
+```
