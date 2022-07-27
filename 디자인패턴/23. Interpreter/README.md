@@ -141,6 +141,8 @@ public class CommandNode extends Node {
     }
 }
 ```
+CommandNode 클래스도 위의 클래스들과 크게 다르지 않다. Node 형의 변수 node 는 <repeat command>에 대응하는 RepeatCommandNode 클래스의 인스턴스,
+또는 <primitive command>에 대응하는 PrimitiveCommandNode 클래스의 인스턴스를 저장하기 위해 사용된다.
 
 ```java
 public class RepeatCommandNode extends Node {
@@ -158,3 +160,29 @@ public class RepeatCommandNode extends Node {
     }
 }
 ```
+RepeatCommandNode 클래스는 <repeat command>에 대응한다. parse 메소드를 따라가보면 다음과 같다.
+> RepeatCommandNode 의 parse 메소드의 안에서는 CommandListNode 의 인스턴스를 만들어, parse 메소드를 호출하고\
+> CommandListNode 의 parse 메소드의 안에서는 CommandNode 의 인스턴스를 만들어, parse 메소드를 호출하고\
+> CommandNode 의 parse 메소드 안에서는 RepeatCommandNode 의 인스턴스를 만들어, parse 메소드를 호출하고\
+> RepeatCommandNode 의 parse 메소드 안에서는...
+
+이 parse 메소드의 마지막은 terminal expression이다. CommandNode의 parse 메소드 안의 if문에 의해 언젠가는 RepeatCommandNode 가 아니라 PrimitiveCommandNode를
+만드는 쪽으로 진행한다. 그리고 PrimitiveCommandNode의 parse 메소드의 안에서는 다른 parse 메소드를 호출하지 않는다. 재귀 호출로 인해 무한루프가 될 것 같지만
+언젠가는 terminal expression에 도달하게 된다. 만약 도달하지 않는가면 그것은 정의가 잘못 된 것이다.
+
+```java
+public class PrimitiveCommandNode extends Node {
+    private String name;
+    public void parse(Context context) throws ParseException{
+        name = context.currentToken();
+        context.skipToken(name);
+        if(!name.equals("go") && !name.equals("right") && !name.equals("left")){
+            throw new ParseException(name + " is undifined");
+        }
+    }
+    public String toString(){
+        return name;
+    }
+}
+```
+PrimitiveCommandNode 클래스의 parse 메소드에서는 다른 parse 메소드를 호출하지 않는다.
