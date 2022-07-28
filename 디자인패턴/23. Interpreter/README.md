@@ -186,3 +186,72 @@ public class PrimitiveCommandNode extends Node {
 }
 ```
 PrimitiveCommandNode 클래스의 parse 메소드에서는 다른 parse 메소드를 호출하지 않는다.
+
+```java
+public class Context{
+    private StringTokenizer tokenizer;
+    private String currentToken;
+    public Context(String text){
+        tokenizer = new StringTokenizer();
+        nextToken();
+    }
+    public String nextToken(){
+        if(tokenizer.hasMoreTokens()){
+            currentToken = tokenizer.nextToken();
+        } else {
+          currentToken = null;  
+        }
+        return currentToken;
+    }
+    public String currentToken(){
+        return currentToken;
+    }
+    public void skipToken(String token) throws ParseException {
+        if(!token.equals(currentToken)){
+            throw new ParseException("Warning: " + token + "is expected, but " + currentToken + " is found.");
+        }
+        nextToken();
+    }
+    public int currentNumber() throws ParseException {
+        int number = 0;
+        try{
+            number = Integer.parseInt(currentToken);
+        }catch (NumberFormatException e) {
+            throw new ParseException("Warning: "+e);
+        }
+        return number;
+    }
+}
+```
+Context 클래스는 구문해석을 위해 필요한 메소드를 제공한다. nextToken 은 다음의 토큰을 얻는다. currentToken 은 현재 토큰을 얻으며, skipToken은 
+현재 토큰을 검사한 후, 다음 토큰을 얻는다. 마지막으로 currentNumber 는 현재의 토큰을 수치로 얻는다.
+
+```java
+public class ParseException extends Exception{
+    public ParseException(String msg){
+        super(msg);
+    }
+}
+```
+ParseException 은 구문해석 안의 예외를 위한 클래스이다.
+
+```java
+public class Main {
+    public static void main(String[] args){
+        try{
+            BufferReader reader = new BufferedReader(new FileReader("program.txt"));
+            String text;
+            while((text = reader.readLine()) != null){
+                System.out.println("text = \"" + text + "\"");
+                Node node = new ProgramNode();
+                node.parse(new Context(text));
+                System.out.println("node = " + node);
+            }
+        }catch (Exception e){
+            e.PrintStackTrace();
+        }
+    }
+}
+```
+Main은 위의 미니 언어의 인터프리터를 작동시키기 위한 클래스이다. "program.txt"라는 파일을 읽어와 구문해석을 한 후 그 결과를 문자열로 표시한다.
+표시 중 text = 로 시작하는 부분이 주어진 미니 프로그램이며, node = 로 시작하고 있는 부분이 구문해석 후의 표시이다. 
