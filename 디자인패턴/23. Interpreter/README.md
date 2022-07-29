@@ -149,7 +149,7 @@ public class RepeatCommandNode extends Node {
     private int number;
     private Node commandListNode;
     public void parse(Context context) throws ParseException{
-        context.skipToekn("repeat");
+        context.skipToken("repeat");
         number = context.currentNumber();
         context.nextToken();
         commandListNode = new CommandListNode();
@@ -197,7 +197,7 @@ public class Context{
     }
     public String nextToken(){
         if(tokenizer.hasMoreTokens()){
-            currentToken = tokenizer.nextToken();
+            currentToken = tokenizer.nextToken(text);
         } else {
           currentToken = null;  
         }
@@ -239,7 +239,7 @@ ParseException 은 구문해석 안의 예외를 위한 클래스이다.
 public class Main {
     public static void main(String[] args){
         try{
-            BufferReader reader = new BufferedReader(new FileReader("program.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("program.txt"));
             String text;
             while((text = reader.readLine()) != null){
                 System.out.println("text = \"" + text + "\"");
@@ -248,10 +248,14 @@ public class Main {
                 System.out.println("node = " + node);
             }
         }catch (Exception e){
-            e.PrintStackTrace();
+            e.printStackTrace();
         }
     }
 }
 ```
 Main은 위의 미니 언어의 인터프리터를 작동시키기 위한 클래스이다. "program.txt"라는 파일을 읽어와 구문해석을 한 후 그 결과를 문자열로 표시한다.
 표시 중 text = 로 시작하는 부분이 주어진 미니 프로그램이며, node = 로 시작하고 있는 부분이 구문해석 후의 표시이다. 
+
+### 패턴 사용시 고려할 사항
+인터프리터를 만들고 있을 때 자주 발생하는 것이 토큰을 한개 많이 읽거나 적개 읽거나 하는 버그이다. 각 전개된 표현에 대응하는 메소드를 기술할 때는 항상
+'이 메소드에 왔을 때 어디까지 토큰을 읽고 있었는지, 이 메소드에서 나갈 떄는 어디까지 토큰을 읽을지'를 염두에 두어야 한다.
