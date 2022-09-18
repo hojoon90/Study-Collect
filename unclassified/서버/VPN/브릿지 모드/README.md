@@ -64,7 +64,7 @@ dhcp-option=tap_soft,3,192.168.7.1
 # Description:       Enable Softether by daemon.
 ### END INIT INFO
 
-DAEMON=/usr/local/vpnserver/vpnserver
+DAEMON=/svc/vpnserver/vpnserver
 LOCK=/var/lock/subsys/vpnserver
 TAP_ADDR=192.168.7.1
 test -x $DAEMON || exit 0
@@ -109,3 +109,5 @@ net.ipv4.ip_forward=1
 [root@localhost ~]# iptables -t nat -A POSTROUTING -s 192.168.7.0/24 -j SNAT --to-source 192.168.50.250
 ```
 
+https://jamong1014.tistory.com/47
+https://blog.kerus.net/690/setup-softether-vpn-local-bridge/
