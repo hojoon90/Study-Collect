@@ -43,7 +43,8 @@ tap_soft: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 
 추가가 확인되었으면 IP 할당을 위한 준비를 해준다. 세팅을 하게 되면 할당된 IP 대역으로 접속자에게 VPN IP를 제공해준다.
 
-먼저 dnsmasq를 설치해준다.
+먼저 DHCP 서버 역할을 해주기 위한 dnsmasq를 설치해준다. 
+자세한 설명은 [여기](https://wiki.gentoo.org/wiki/Dnsmasq/ko) 로...
 ```shell
 [root@localhost ~]# dnf install dnsmasq
 ```
