@@ -47,6 +47,7 @@ tap_soft: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 자세한 설명은 [여기](https://wiki.gentoo.org/wiki/Dnsmasq/ko) 로...
 ```shell
 [root@localhost ~]# dnf install dnsmasq
+[root@localhost ~]# systemctl enable dnsmasq --now
 ```
 
 설정 파일을 vi 로 열어준 후 아래 내용을 추가해준다. VPN 접속 사용자는 50~60 사이의 IP를 할당받게 된다.
@@ -105,6 +106,8 @@ echo "Usage: $0 {start|stop|restart}"
 exit 1
 esac
 exit 0
+
+[root@localhost ~]# chmod 755 /etc/init.d/vpnserver
 ```
 
 내부 네트워크에서 IP를 이용해 나갈 수 있도록 포워딩.(외부 사이트 접근이 가능하도록.)
@@ -177,3 +180,19 @@ COMMIT
 ```
 
 
+###TroubleShooting
+#### PPP서버 세팅이 안됐다고 하는 경우
+로그에 아래와 같이 나올 경우, dnsmasq 를 재실행해준다.
+```text
+L2TP PPP Session [192.168.xxx.xxx:1701]: Acquiring an IP address from the DHCP server failed. To accept a PPP session, you need to have a DHCP server. Make sure that a DHCP server is working normally in the Ethernet segment which the Virtual Hub belongs to. If you do not have a DHCP server, you can use the Virtual DHCP function of the SecureNAT on the Virtual Hub instead.
+```
+```shell
+[root@localhost ~]# systemctl restart dnsmasq
+```
+
+#### VPN 접속은 됐지만 외부 인터넷이 안되는 경우
+iptables 로 아래 사항을 추가해주고 다시 세이브 해준다.
+```shell
+[root@localhost ~]# iptables -t nat -A POSTROUTING -s 192.168.7.0/24 -j SNAT --to-source 192.168.50.250
+[root@localhost ~]# service iptables save
+```
