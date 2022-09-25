@@ -3,6 +3,11 @@
 Rocky Linux 설치 후 개발에 필요한 MariaDB, Jenkins와 실제 제공할 프로젝트 서비스 제공을 위해 Docker 설치를 진행하려 한다. CentOS와 거의 유사하지만
 일부 부분에서 다르기 때문에 한번 정리를 해보려 한다.
 
+#### 참고 URL
+* <https://docs.docker.com/engine/install/fedora/#set-up-the-repository>
+* <https://svrforum.com/os/366485>
+
+### Docker 설치
 
 먼저 dnf-plugins-core 패키지(DNF 레포지토리 관리 명령 제공)를 설치 하고 레포지토리를 설정한다.
 
@@ -103,3 +108,36 @@ Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /
 ```
 
 여기까지 진행했으면 docker 설치가 완료된 것이다.
+
+
+### Portainer 설치
+Portainer는 도커 관리를 위한 GUI툴로서, 명령어로 모든걸 처리해야 하는 도커 특성상 굉장히 유용한 툴이다. 도커 이미지 관리뿐만 아니라 이미지 내부에 접속해
+여러가지를 확인할 수 있는 오픈소스 툴이다.
+
+난 볼륨매칭용 데이터 디렉토리를 만든 후 Portainer 처리를 진행하였다.
+명령어를 입력하면 알아서 이미지 다운로드 후 실행을 진행한다.
+```shell
+[root@localhost ~]# docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+Unable to find image 'portainer/portainer-ce:latest' locally
+latest: Pulling from portainer/portainer-ce
+772227786281: Pull complete
+96fd13befc87: Pull complete
+884dbe464e55: Pull complete
+f60f1fd54bd7: Pull complete
+Digest: sha256:5466af30b8eaf3f75edd3c74703d1c9973f0963acd6ef164913ea6f195d640c2
+Status: Downloaded newer image for portainer/portainer-ce:latest
+2127e40a40e92b24677ec32693785819e516a1520937556d5e1fb92123de320d
+```
+
+실행 후 https://{접근 IP}:9443 을 웹브라우저에 입력하면 아래와 같이 초기 생성화면이 나타난다.
+![portainer_main.png](images/portainer_main.png)
+
+암호 세팅 후 접속하면 아래와 같은 화면이 나타난다.
+Get Started를 눌러준다.
+![dashboard.png](images/dashboard.png)
+
+그럼 다음과 같이 자신의 로컬페이지 홈 화면으로 이동하게 된다. 아래 local 을 눌러주자.
+![getstart.png](images/getstart.png)
+
+그럼 local의 서버 상태와 이미지 등의 여러 정보들이 나타나게 된다. 여기서 이미지 접근 혹은 새롭게 생성등을 할 수 있다.
+![info.png](images/info.png)
