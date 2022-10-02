@@ -45,7 +45,7 @@ docker.io/jenkins/jenkins:lts-jdk11
 
 실행 후 지정한 포트로 접근하면 아래와 같이 초기 비밀번호를 입력하라는 안내가 나온다.
 위치는 아래 친절하게 작성해주었으니, 컨테이너 내부로 들어가 해당 위치의 파일을 확인한다.
-
+![init_page.png](images/init_page.png)
 
 파일을 확인하면 아래와 같이 비밀번호를 보여준다 (뒤의 *은 마스킹처리한 단어이다.)
 ```shell
@@ -58,3 +58,15 @@ root@212bce83ec57:/# cat /var/jenkins_home/secrets/initialAdminPassword
 root@212bce83ec57:/var/jenkins_home/secrets#
 ```
 
+입력 후 continue를 누르면 아래처럼 어떻게 설치할 것인지 선택하는 화면이 나온다. 커스텀해서 사용할 것이 아니라면 젠킨스가 추천하는 기본적인 설치방법으로 설치해준다.
+왼쪽에 Install suggested plugins를 선택해준다.
+![install_select.png](images/install_select.png)
+
+선택하면 아래와 같이 젠킨스가 알아서 설치를 해준다. 설치가 다 진행될 때 까지 기다려준다.
+![install_suggested_plugin.png](images/install_suggested_plugin.png)
+
+설치가 완료되었으면 admin계정의 기본 정보입력과 젠킨스 접근 URL을 설정하는 창이 나오는데... 깜빡하고 캡쳐를 못했다...
+크게 중요한 부분은 없으니 정보 입력 후 다음버튼을 열심히 눌러주자.
+
+다 완료되면 아래처럼 메인화면이 나오게 된다. 여기까지 진행했으면 젠킨스 설치가 완료된 것이다.
+![jenkins_main.png](images/jenkins_main.png)
