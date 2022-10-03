@@ -3,6 +3,9 @@
 프로젝트 배포를 위한 Jenkins를 Docker를 이용해 설치 해보도록 하겠다. 최종 목표는 깃허브에 올리는 프로젝트를 빌드하여 서버에 배포하는 것인데, 여기서는
 깃허브와 연동하여 최종 배포하는 것 까지 해보려 한다.
 
+#### 참고 URL
+<https://crispyblog.kr/development/common/10>
+
 일단 Jenkins 를 설치하기 위한 사양은 아래와 같다.
 
 최소사양\
@@ -70,3 +73,8 @@ root@212bce83ec57:/var/jenkins_home/secrets#
 
 다 완료되면 아래처럼 메인화면이 나오게 된다. 여기까지 진행했으면 젠킨스 설치가 완료된 것이다.
 ![jenkins_main.png](images/jenkins_main.png)
+
+
+```shell
+[root@localhost ~]# docker run -d -p 9000:8080 -v /data/jenkins/:/var/jenkins_home -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock --name jenkins_git -u root jenkins/jenkins:lts-jdk11
+```
