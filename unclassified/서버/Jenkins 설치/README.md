@@ -74,7 +74,10 @@ root@212bce83ec57:/var/jenkins_home/secrets#
 다 완료되면 아래처럼 메인화면이 나오게 된다. 여기까지 진행했으면 젠킨스 설치가 완료된 것이다.
 ![jenkins_main.png](images/jenkins_main.png)
 
+### DooD 설치
 
+젠킨스에서는 도커 이미지를 만들기 위해선 내부에 도커설치가 되어야 함. 이를DinD(Docker in Docker)방식이라고 하는데, 별로 추천하는 방식이 아님.
+그래서 해당 문제를 해결하기 위해서 DooD(Docker out of Docker) 방식으로 처리하려 함. 젠킨스 이미지가 호스트의 도커를 바라보는 형태라고 생각하면 쉬움
 ```shell
 [root@localhost ~]# docker run -d -p 9000:8080 -v /data/jenkins/:/var/jenkins_home -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock --name jenkins_git -u root jenkins/jenkins:lts-jdk11
 ```
