@@ -76,8 +76,10 @@ root@212bce83ec57:/var/jenkins_home/secrets#
 
 ### DooD 설치
 
-젠킨스에서는 도커 이미지를 만들기 위해선 내부에 도커설치가 되어야 함. 이를DinD(Docker in Docker)방식이라고 하는데, 별로 추천하는 방식이 아님.
-그래서 해당 문제를 해결하기 위해서 DooD(Docker out of Docker) 방식으로 처리하려 함. 젠킨스 이미지가 호스트의 도커를 바라보는 형태라고 생각하면 쉬움
+젠킨스에서는 도커 이미지를 만들기 위해선 내부에 도커설치가 되어야 함. 이를DinD(Docker in Docker)방식이라고 하는데, 별로 추천하는 방식이 아니다.
+그래서 해당 문제를 해결하기 위해서 DooD(Docker out of Docker) 방식으로 처리하려 함. 젠킨스 이미지가 호스트의 도커를 바라보는 형태라고 생각하면 쉽다.
+실행은 아래와 같이 docker 와 docker.sock 을 -v(볼륨바인드 옵션) 옵션으로 매핑을 해준다.
 ```shell
 [root@localhost ~]# docker run -d -p 9000:8080 -v /data/jenkins/:/var/jenkins_home -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock --name jenkins_git -u root jenkins/jenkins:lts-jdk11
 ```
+
