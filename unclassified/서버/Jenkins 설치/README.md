@@ -82,4 +82,3 @@ root@212bce83ec57:/var/jenkins_home/secrets#
 ```shell
 [root@localhost ~]# docker run -d -p 9000:8080 -v /data/jenkins/:/var/jenkins_home -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock --name jenkins_git -u root jenkins/jenkins:lts-jdk11
 ```
-
