@@ -6,10 +6,23 @@
 
 이 항목을 읽기 전에 서버 세팅을 먼저 읽고 오는 것을 추천함.
 
+먼저 브릿지 생성을 해주자. 관리자 툴에서 'local bridge setting'을 눌러준다.\
+![local_bridge](images/local_bridge.png)
 
+들어가면 브릿지 설정을 위한 화면이 나오게 되는데 'Bridge with New Tap Device'를 클릭한 후, 브릿지 이름을 작성해준다.\
+(아래 soft가 작성되어있는 부분. 참고로 생성되는 브릿지 이름 앞에는 'tap_'이라는 이름이 함께 붙는다. 여기서는 tap_soft로 인터페이스가 생성됨.)\
+그 후, 'Create Local Bridge'를 눌러준다.\
+![create_bridge](images/create_bridge.png)
 
-* 브릿지 모드 세팅 이미지 추가(관리툴)
+가상머신으로 서버를 실행시키는 사용자들의 경우 아래 안내문이 나오게 된다. 요지는 네트워크의 Promiscuous Mode(무작위 모드)가 거부상태이면 브릿지가 정상적으로
+동작하지 않는다는 내용이다. 해결법은 Virtual Box를 사용하는 사용자라면 가상머신의 설정>네트워크>고급 에서 무작위 모드를 '모두 허용'으로 바꿔주면 된다.\
+![vm_setting](images/vm_setting.png)
 
+OK를 눌러주면 브릿지 생성이 완료되었다는 알람이 나온다.\
+![confirm](images/confirm.png)
+
+그리고 아래와 같이 브릿지가 추가되어 동작하고 있는 것을 확인할 수 있다.\
+![operating](images/operating.png)
 
 그 후, tap_soft 라는 인터페이스가 추가되었는지 확인한다.
 ```shell
