@@ -209,3 +209,8 @@ iptables 로 아래 사항을 추가해주고 다시 세이브 해준다.
 [root@localhost ~]# iptables -t nat -A POSTROUTING -s 192.168.7.0/24 -j SNAT --to-source 192.168.50.250
 [root@localhost ~]# service iptables save
 ```
+
+#### 서버 재부팅 시 vpnserver가 실행되지 않는 이슈
+재부팅 시 init.d안에 넣어놓은 실행파일이 제대로 작동하지 않음.
+해당 문제에 대해서는 서칭 필요. 그리고 서버 재부팅이 진행됐으면 **꼭 /etc/init.d/vpnserver start 로 서버를 실행시키자
+여기에 설정해놓은 값을 읽은 상태에서 서버실행이 되어야 정상적으로 브릿지도 동작하게 된다.
