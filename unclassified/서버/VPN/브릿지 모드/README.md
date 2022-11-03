@@ -1,4 +1,4 @@
-# Softether VPN 브릿지 모드 세팅
+`# Softether VPN 브릿지 모드 세팅
 
 #### 참고 URL
 * <https://blog.kerus.net/690/setup-softether-vpn-local-bridge/>
@@ -25,6 +25,7 @@ OK를 눌러주면 브릿지 생성이 완료되었다는 알람이 나온다.\
 ![operating](images/operating.png)
 
 그 후, tap_soft 라는 인터페이스가 추가되었는지 확인한다.
+
 ```shell
 [root@localhost ~]# ifconfig
 enp0s3: flags=4419<UP,BROADCAST,RUNNING,PROMISC,MULTICAST>  mtu 1500
