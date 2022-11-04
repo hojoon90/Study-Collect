@@ -68,7 +68,11 @@ root@212bce83ec57:/var/jenkins_home/secrets#
 선택하면 아래와 같이 젠킨스가 알아서 설치를 해준다. 설치가 다 진행될 때 까지 기다려준다.
 ![install_suggested_plugin.png](images/install_suggested_plugin.png)
 
-설치가 완료되었으면 admin계정의 기본 정보입력과 젠킨스 접근 URL을 설정하는 창이 나오는데... 깜빡하고 캡쳐를 못했다...
+설치가 완료되었으면 admin 계정의 기본 정보입력창이 나온다. 이 계정으로 admin 권한 수행을 하므로 자신이 잘 기억할 수 있는 계정값으로 입력해준다.
+(필자는 한번 까먹어서 새로 세팅했다...)
+![admin_account.png](images/admin_account.png)
+
+젠킨스 접근 URL을 설정하는 창이 나오는데... 깜빡하고 캡쳐를 못했다...
 크게 중요한 부분은 없으니 정보 입력 후 다음버튼을 열심히 눌러주자.
 
 다 완료되면 아래처럼 메인화면이 나오게 된다. 여기까지 진행했으면 젠킨스 설치가 완료된 것이다.
