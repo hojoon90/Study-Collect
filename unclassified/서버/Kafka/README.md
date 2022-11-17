@@ -13,7 +13,8 @@
 - 기존 DB 하나에 붙어 의존하던 시스템 -> MSA 형태로 변함에 따라 모듈간의 메세지 전달을 원할하게 하기 위해 사용.
 
 ### 카프카 구조
-![kafka_str.png](images/kafka_str.png)
+<img src="images/kafka_str.png" width="80%" height="80%"/>
+
 
 기본적으로 Producer에서 메세지를 전달하면 Kafka를 통해 Consumer가 메세지를 처리하는 구조.
 
@@ -32,7 +33,8 @@
 
 ### 파티션
 
-![topic_inside.png](images/topic_inside.png)
+<img src="images/topic_inside.png" width="80%" height="80%"/>
+
 
 - 토픽을 통해 들어오는 데이터를 저장하는 저장소. 
 - 한 개의 토픽은 한 개 이상의 파티션으로 구성.
@@ -48,7 +50,8 @@
 - 여러개의 컨슈머를 하나의 그룹으로 묶어, 하나의 토픽에 붙여서 메세지 컨슈밍이 가능함.
 
 #### 컨슈머가 1개일 경우
-![one_consumer.png](images/one_consumer.png)
+<img src="images/one_consumer.png" width="50%" height="50%"/>
 
 #### 컨슈머 3개가 그룹으로 세팅되었을 경우
-![three_consumer.png](images/three_consumer.png)
+<img src="images/three_consumer.png" width="50%" height="50%"/>
+
