@@ -216,3 +216,20 @@ iptables 로 아래 사항을 추가해주고 다시 세이브 해준다.
 해당 문제에 대해서는 서칭 필요. 그리고 서버 재부팅이 진행됐으면 **꼭 /etc/init.d/vpnserver start 로 서버를 실행시키자
 여기에 설정해놓은 값을 읽은 상태에서 서버실행이 되어야 정상적으로 브릿지도 동작하게 된다.
 
+```shell
+[Unit]
+Description=SoftEther VPN Server
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/svc/vpnserver/vpnserver start
+ExecStop=/svc/vpnserver/vpnserver stop
+ExecStartPost=/bin/sleep 1
+ExecStartPost=/bin/bash -c "/bin/systemctl set-environment dev=$(ip addr | grep tap_ | sed 's/^.*: \(tap_.*\):.*$/\1/g')"
+ExecStartPost=/sbin/ifconfig tap_soft 192.168.7.1
+
+[Install]
+WantedBy=multi-user.target
+```
+서비스 스크립트 작성중... Permission denied 문제 해결중...
