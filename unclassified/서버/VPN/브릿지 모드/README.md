@@ -213,9 +213,10 @@ iptables 로 아래 사항을 추가해주고 다시 세이브 해준다.
 
 #### 서버 재부팅 시 vpnserver가 실행되지 않는 이슈
 재부팅 시 init.d안에 넣어놓은 실행파일이 제대로 작동하지 않음.
-해당 문제에 대해서는 서칭 필요. 그리고 서버 재부팅이 진행됐으면 **꼭 /etc/init.d/vpnserver start 로 서버를 실행시키자
+해당 문제에 대해서는 서칭 필요. 그리고 서버 재부팅이 진행됐으면 **꼭 /etc/init.d/vpnserver start 로 서버를 실행시키자.**
 여기에 설정해놓은 값을 읽은 상태에서 서버실행이 되어야 정상적으로 브릿지도 동작하게 된다.
 
+추가 내용
 ```shell
 [Unit]
 Description=SoftEther VPN Server
@@ -226,10 +227,45 @@ Type=forking
 ExecStart=/svc/vpnserver/vpnserver start
 ExecStop=/svc/vpnserver/vpnserver stop
 ExecStartPost=/bin/sleep 1
-ExecStartPost=/bin/bash -c "/bin/systemctl set-environment dev=$(ip addr | grep tap_ | sed 's/^.*: \(tap_.*\):.*$/\1/g')"
 ExecStartPost=/sbin/ifconfig tap_soft 192.168.7.1
 
 [Install]
 WantedBy=multi-user.target
 ```
-서비스 스크립트 작성중... Permission denied 문제 해결중...
+문제해결. 문제는 리눅스 내부의 보안을 위한 SELinux 때문에 되지 않았다. (참고 URL: https://jesc1249.tistory.com/337)
+```shell
+[root@localhost init.d]# sestatus
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+```
+Current mode가 enforcing으로 설정된 것을 볼 수 있다.
+setenforce 명령어로 변경해준다.
+```shell
+[root@localhost init.d]# setenforce 0
+Permissive
+```
+다시 확인하면 변경된 것을 볼 수 있다.
+
+```shell
+[root@localhost init.d]# sestatus
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   permissive
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+```
+
+근데 재부팅하면 iptable도 초기화되는 이슈가 있어서 해당내용도 확인이 필요하다.
