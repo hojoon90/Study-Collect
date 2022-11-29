@@ -1,4 +1,4 @@
-`# Softether VPN 브릿지 모드 세팅
+# Softether VPN 브릿지 모드 세팅
 
 #### 참고 URL
 * <https://blog.kerus.net/690/setup-softether-vpn-local-bridge/>
