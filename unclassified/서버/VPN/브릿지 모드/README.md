@@ -269,3 +269,4 @@ Max kernel policy version:      33
 ```
 
 근데 재부팅하면 iptable도 초기화되는 이슈가 있어서 해당내용도 확인이 필요하다.
+sestatus도 재부팅하면 enforcing 상태로 돌아감..... 더 찾아봐야할듯...
