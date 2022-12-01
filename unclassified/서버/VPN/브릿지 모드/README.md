@@ -270,3 +270,49 @@ Max kernel policy version:      33
 
 근데 재부팅하면 iptable도 초기화되는 이슈가 있어서 해당내용도 확인이 필요하다.
 sestatus도 재부팅하면 enforcing 상태로 돌아감..... 더 찾아봐야할듯...
+
+새로운 스크립트 발견(https://blog.yasithab.com/centos/softether-vpn-on-centos-7/)
+```shell
+[Unit]
+Description=SoftEther VPN Server
+After=network.target auditd.service
+ConditionPathExists=!/usr/local/vpnserver/do_not_run
+
+[Service]
+Type=forking
+TasksMax=16777216
+User=softether
+Group=softether
+ExecStart=/usr/local/vpnserver/vpnserver start
+ExecStop=/usr/local/vpnserver/vpnserver stop
+KillMode=process
+Restart=on-failure
+
+# Hardening
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
+ReadOnlyDirectories=/
+ReadWriteDirectories=/usr/local/vpnserver
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_BROADCAST CAP_NET_RAW CAP_SYS_NICE CAP_SYSLOG CAP_SETUID
+
+[Install]
+WantedBy=multi-user.target
+```
+
+하지만 시작이 제대로 되지 않아 확인중
+```shell
+[root@localhost system]# systemctl status vpnserver.service
+× vpnserver.service - SoftEther VPN Server
+     Loaded: loaded (/etc/systemd/system/vpnserver.service; enabled; vendor preset: disabled)
+     Active: failed (Result: exit-code) since Thu 2022-12-01 23:52:55 KST; 2s ago
+    Process: 2099 ExecStart=/svc/vpnserver/vpnserver start (code=exited, status=217/USER)
+        CPU: 1ms
+
+12월 01 23:52:55 localhost.localdomain systemd[1]: vpnserver.service: Scheduled restart job, restart counter is at 2.
+12월 01 23:52:55 localhost.localdomain systemd[1]: Stopped SoftEther VPN Server.
+12월 01 23:52:55 localhost.localdomain systemd[1]: vpnserver.service: Start request repeated too quickly.
+12월 01 23:52:55 localhost.localdomain systemd[1]: vpnserver.service: Failed with result 'exit-code'.
+12월 01 23:52:55 localhost.localdomain systemd[1]: Failed to start SoftEther VPN Server.
+```
+
