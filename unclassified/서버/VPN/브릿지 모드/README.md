@@ -318,3 +318,5 @@ WantedBy=multi-user.target
 일단 'Start request repeated too quickly.' 이 에러는 Restart=on-failure 를 주석처리했을 시 사라지는 것을 확인.\
 하지만 여전히 Permission Denied 가 떨어짐. 해결하기 위해서는 SELinux 의 Current mode 의 enforce 값을 변경해주어야 하는데 이게 결국 보안세팅을 건드리는거라
 선뜻 하기가 망설여짐. 다른 방법이 있을거 같은데 서칭이 꽤나 오래 걸림..
+
+/usr/local/bin 안에 세팅하면 된다는 글을 보아 시도중
