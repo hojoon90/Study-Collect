@@ -268,10 +268,10 @@ Memory protection checking:     actual (secure)
 Max kernel policy version:      33
 ```
 
-근데 재부팅하면 iptable도 초기화되는 이슈가 있어서 해당내용도 확인이 필요하다.
-sestatus도 재부팅하면 enforcing 상태로 돌아감..... 더 찾아봐야할듯...
+~~근데 재부팅하면 iptable도 초기화되는 이슈가 있어서 해당내용도 확인이 필요하다.~~
+~~sestatus도 재부팅하면 enforcing 상태로 돌아감..... 더 찾아봐야할듯...~~
 
-새로운 스크립트 발견(https://blog.yasithab.com/centos/softether-vpn-on-centos-7/)
+~~새로운 스크립트 발견(https://blog.yasithab.com/centos/softether-vpn-on-centos-7/)~~
 ```shell
 [Unit]
 Description=SoftEther VPN Server
@@ -300,7 +300,7 @@ CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_BROADCAST CAP_N
 WantedBy=multi-user.target
 ```
 
-하지만 시작이 제대로 되지 않아 확인중
+~~하지만 시작이 제대로 되지 않아 확인중~~
 ```shell
 [root@localhost system]# systemctl status vpnserver.service
 × vpnserver.service - SoftEther VPN Server
@@ -315,8 +315,31 @@ WantedBy=multi-user.target
 12월 01 23:52:55 localhost.localdomain systemd[1]: vpnserver.service: Failed with result 'exit-code'.
 12월 01 23:52:55 localhost.localdomain systemd[1]: Failed to start SoftEther VPN Server.
 ```
-일단 'Start request repeated too quickly.' 이 에러는 Restart=on-failure 를 주석처리했을 시 사라지는 것을 확인.\
+~~일단 'Start request repeated too quickly.' 이 에러는 Restart=on-failure 를 주석처리했을 시 사라지는 것을 확인.\
 하지만 여전히 Permission Denied 가 떨어짐. 해결하기 위해서는 SELinux 의 Current mode 의 enforce 값을 변경해주어야 하는데 이게 결국 보안세팅을 건드리는거라
-선뜻 하기가 망설여짐. 다른 방법이 있을거 같은데 서칭이 꽤나 오래 걸림..
+선뜻 하기가 망설여짐. 다른 방법이 있을거 같은데 서칭이 꽤나 오래 걸림..~~
 
-/usr/lib/systemd/system 안에 세팅하면 된다는 글을 보아 시도중
+~~/usr/lib/systemd/system 안에 세팅하면 된다는 글을 보아 시도중~~
+
+해결 완료. SELinux 해제는 꼭 필요한 것 같아보인다. 그래서 약간의 꼼수를 이용하여 실행되도록 처리하였다. 스크립트는 아래와 같다.
+```shell
+[nit]
+Description=SoftEther VPN Server
+After=network.target
+
+[Service]
+Type=forking
+ExecStartPre=setenforce 0
+ExecStart=/svc/vpnserver/vpnserver start
+ExecStop=/svc/vpnserver/vpnserver stop
+ExecStartPost=/bin/sleep 1
+ExecStartPost=/sbin/ifconfig tap_soft 192.168.7.1
+ExecStartPost=setenforce 1
+PermissionsStartOnly=true
+
+[Install]
+WantedBy=multi-user.target
+```
+vpn 시작 시 권한오류가 발생하고, 이는 SELinux 정책?때문에 접근자체가 되지 않는것 같아 vpnserver 시작 전에 SELinux Status의 값을 permissive로 변경해준다.
+permissive 값은 허용모드이지만 대신 보안 경고를 해주는 상태이다. ExecStartPre 로 시작전에 잠깐 모드를 바꿔주고 vpnserver를 실행한다. 실행이 완료되면 
+다시 ExecStartPost 값으로 SELinux 상태를 enforcing값으로 변경해준다. 그리고 나서 재부팅을 2~3회 진행해봤는데, 문제없이 실행되는것을 확인할 수 있다.
