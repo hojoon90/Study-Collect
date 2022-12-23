@@ -44,3 +44,38 @@ Spring에서 Proxy 객체를 생성하는 방식은 대상 객체가 인터페�
 2. 해당 메소드의 앞, 뒤에 트랜잭션 로직이 들어간다. (이 로직으로 인해 commit, rollback이 수행됨.)
 3. 실제 동작에따라 commit 혹은 rollback이 수행됨.
 
+```java
+public class BoardService{
+    @Transactional
+    public void postArticle(AllBoard allBoard){
+         collectPersister.postArticle(allBoard);
+    }
+}
+
+```
+위 코드로 나타내보면 다음과 같을 것이다.
+```java
+public class BoardService{
+    public void postArticle(AllBoard allBoard){
+        Connection conn = dataSource.getConnection();
+        try(conn){
+            conn.setAutoCommit(false);
+            //실제 작성한 로직
+            collectPersister.postArticle(allBoard);
+            
+            conn.commit();
+        } catch (SQLException e){
+            conn.rollback();
+        }
+    }
+}
+
+```
+Proxy의 경우 트랜잭션을 관리하긴 하지만 실제 트랜잭션 상태를 Proxy가 결정할 수는 없음.\
+그렇기 때문에 Proxy는 Transaction Manager에게 해당 결정을 위임하여 트랜잭션 처리를 함.
+
+참고 자료
+* https://blogshine.tistory.com/291
+* https://private-space.tistory.com/98?utm_source=pocket_reader
+* https://tecoble.techcourse.co.kr/post/2021-06-25-aop-transaction/?utm_source=pocket_reader
+* 웹개발자를 위한 Spring 4.0 프로그래밍
