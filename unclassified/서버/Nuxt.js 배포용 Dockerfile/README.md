@@ -31,17 +31,40 @@ Nuxt.js는 기본적으로 node가 실행될 수 있는 환경에서 실행된�
 추후 nginx도 적용될 수 있으므로 편하게 nginx 이미지를 베이스로 Dockerfile을 생성한다.
 ```shell
 FROM nginx
+# node 설치를 위한 npm 설치
 RUN apt-get update && apt-get install npm -y
+# yarn, n, pm2 설치
+RUN npm i -g yarn && npm i -g n && npm i -g pm2
+# node 버전 변경 및 확인.
+RUN n 16.19.0
+RUN node -v
+
+#추후 nginx 사용시 필요한 설정.
+#COPY ./default.conf /etc/nginx/conf.d/default.conf
+
+WORKDIR /app
+
+#추후 이미지 빌드 시 cache 사용을 위해 패키지 선 설치
+COPY ./package*.json .
+# 모듈 설치
+RUN yarn install
+
+# 소스 복사
+COPY . .
+
+ENV HOST 0.0.0.0
+EXPOSE 3000
+
+# 빌드
+RUN yarn run build
+
+# 컨테이너 실행. pm2의 경우 foreground 실행을 위해 pm2-runtime으로 실행.
+CMD ["sh", "-c", "pm2-runtime start ecosystem.config.js && service nginx start"]
 ```
-nginx 이미지를 베이스로 node 설치를 위한 npm 설치\
-위 처럼 npm 설치 시 node 버전은 기본적으로 12버전 (12.22.1 or 12.22.2)\
+위 처럼 npm 설치 시 node 버전은 기본적으로 12버전이 설치됨. (12.22.1 or 12.22.2)\
 Nuxt 3 는 14, 16, 18, 19버전을 지원한다. 
 > On the server side, Nuxt 3 supports Node.js 14, 16, 18, and 19 at the moment. ...\
 > (https://nuxt.com/v3#the-browser-and-nodejs-support)
 
-버전 변경이 필요하므로 n 을 설치해준다. 설치하면서 패키지 매니저(Yarn)도 함께 설치해준다.
-```shell
-RUN npm i -g n && npm i -g yarn
-```
-
+버전 변경이 필요하므로 n 을 설치하여 버전을 변경해준다.
 
