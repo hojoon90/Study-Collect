@@ -67,4 +67,3 @@ Nuxt 3 는 14, 16, 18, 19버전을 지원한다.
 > (https://nuxt.com/v3#the-browser-and-nodejs-support)
 
 버전 변경이 필요하므로 n 을 설치하여 버전을 변경해준다.
-
