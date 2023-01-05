@@ -139,7 +139,7 @@ FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memor
 ### PM2 설치
 PM2는 간단히 이야기해서 로드 밸런서가 내장 된 Node.js 애플리케이션의 프로덕션 프로세스 관리자.\
 Nuxt에 PM2 적용방법은 아래 URL 참고\
-https://nuxtjs.org/deployments/pm2/
+[https://nuxt.com/docs/getting-started/deployment#using-pm2](https://nuxt.com/docs/getting-started/deployment#using-pm2)
 
 root 디렉토리에 ecosystem.config.js 파일 생성 후 아래와 같이 입력
 ```shell
@@ -151,8 +151,8 @@ module.exports = {
       exec_mode: 'fork',
       instances: 1, // Or 'max'
       autorestart: true,
-      script: './node_modules/nuxt/bin/nuxt.js',
-      args: 'start'
+      script: './.output/server/index.mjs',
+      args: 'preview'
     }
   ]
 }
@@ -220,4 +220,7 @@ FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memor
 ℹ Listening on: http://172.17.0.3:3000/
 ```
 
-
+### 참고 URL
+* [https://velog.io/@nawnoes/nodejs-express.js-서버-babel-node와-pm2로-기동하기](https://velog.io/@nawnoes/nodejs-express.js-%EC%84%9C%EB%B2%84-babel-node%EC%99%80-pm2%EB%A1%9C-%EA%B8%B0%EB%8F%99%ED%95%98%EA%B8%B0)
+* [https://jhyeok.com/nuxtjs-pm2-nginx/](https://jhyeok.com/nuxtjs-pm2-nginx/)
+* [https://blog.naver.com/PostView.nhn?blogId=minhyupp&logNo=222137233337&parentCategoryNo=&categoryNo=81&viewDate=&isShowPopularPosts=true&from=search](https://blog.naver.com/PostView.nhn?blogId=minhyupp&logNo=222137233337&parentCategoryNo=&categoryNo=81&viewDate=&isShowPopularPosts=true&from=search)
