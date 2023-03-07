@@ -2,6 +2,24 @@
 
 동일한 타입이 둘 이상인 경우 빈 이름 지정
 
+설정 먼저 추가
+
+```java
+@Configuration
+static class SameBeanConfig {
+    @Bean
+    public MemberRepository memberRepository1() {
+        return new MemoryMemberRepository();
+    }
+
+    @Bean
+    public MemberRepository memberRepository2() {
+        return new MemoryMemberRepository();
+    }
+}
+```
+같은 객체에 이름만 다른 Bean 두개가 생긴것을 볼 수 있음.
+
 **타입 조회 시 같은타입이 2개이상이면 중복 오류**
 ```java
 @Test
