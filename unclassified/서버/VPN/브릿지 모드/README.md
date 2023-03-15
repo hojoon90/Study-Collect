@@ -4,6 +4,9 @@
 * <https://blog.kerus.net/690/setup-softether-vpn-local-bridge/>
 * <https://damoa-nawa.tistory.com/89>
 
+**!!!!브릿지 설정전에 무조건 SecureNAT 를 disable 해주어야한다! 그렇지 않으면 vpn을 접속하고도 서버 접근을 할수 없어진다.
+위 URL들 참고!!!!**
+
 이 항목을 읽기 전에 서버 세팅을 먼저 읽고 오는 것을 추천함.
 
 먼저 브릿지 생성을 해주자. 관리자 툴에서 'local bridge setting'을 눌러준다.\
@@ -194,7 +197,7 @@ COMMIT
 ```
 
 
-###TroubleShooting
+### TroubleShooting
 #### PPP서버 세팅이 안됐다고 하는 경우
 로그에 아래와 같이 나올 경우, dnsmasq 를 재실행해준다.
 ```text
@@ -203,6 +206,14 @@ L2TP PPP Session [192.168.xxx.xxx:1701]: Acquiring an IP address from the DHCP s
 ```shell
 [root@localhost ~]# systemctl restart dnsmasq
 ```
+만약 dnsmasq 로그에 아래와 같이 나오는 경우 vpn 서버의 재시작이 필요하다
+```shell
+DHCP packet received on {{인터페이스 이름}} which has no address softehter
+```
+이 에러가 나온 이유는 위에 SecureNAT 설정을 끄지 않은 상태로 VPN 세팅을 진행한 후 추후에 SecureNAT 설정을 종료해서 발생했는데,\
+아마 설정이 변경된 후에 제대로 반영되지 않은 상태여서 나온 에러로 보인다. 대신 vpn서버의 시작은 /etc/init.d에 만들어둔 vpnserver 스크립트로\
+실행해주어야 한다.
+
 
 #### VPN 접속은 됐지만 외부 인터넷이 안되는 경우
 iptables 로 아래 사항을 추가해주고 다시 세이브 해준다.
