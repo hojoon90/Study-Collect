@@ -100,7 +100,7 @@ drwxr-xr-x.   2 root root    6 Apr 11  2018 srv
 ```
 2. root 이외의 사용자가 접속 '/' 경로에 쓰기 권한이 있어서는 안된다.(755. 그룹, 기타 사용자는 읽기 실행 권한만 있어야함.)
    1. root 이외 사용자에게 쓰기 권한이 있으면 sftp 접속이 안된다.
-      ![no_connection](./images/sftp_no_connection.png)
+      ![no_connection](images/sftp_no_connection.png)
       *경로 설정 혹은 권한 설정이 안 돼 있으면 sftp 접속이 되지 않는다.*
 3. '/' 경로에 쓰기 권한이 없으니 접속하는 사용자가 파일 업로드가 불가능하다. 
    1. 접속자 소유의 uploads 디렉토리를 각 '/' 경로 밑에 만들어주면 해결.
@@ -141,19 +141,19 @@ Redirecting to /bin/systemctl restart sshd.service
 사용자와 그룹 권한이 변경된게 확인됐으면 실제로 접속 해보자. 접속하면 아래 이미지와 같이 '/'가 sftp_home으로 잡히며,\
 그 하위에 만들어 둔 계정 디렉토리로 접근하게 된다. 그리고 해당계정에서 uploads 디렉토리로 접근 가능한 것을 볼 수 있다.
 
-![connection_success](./images/sftp_connect_success.png)
+![connection_success](images/sftp_connect_success.png)
 
 그럼 이제 실제 파일을 업로드 해보자.\
 현재 위치(/sftp-test) 경로에 파일을 업로드 하려면 업로드가 실패하는 것을 볼 수 있다.
 
-![cant_upload](./images/sftp_cant_upload.png)
+![cant_upload](images/sftp_cant_upload.png)
 
 그 이유는 sftp-test 디렉토리는 소유자 이외에는 쓰기 권한이 없기 때문이다. \
 아까 위에서 주었던 권한이 소유자를 제외하고는 쓰기권한이 없는 것을 기억하자.\
 (이 디렉토리의 소유자는 root 이며, 디렉토리의 권한은 755이다.)\
 upload 디렉토리로 이동한 후 파일을 업로드해보면 정상적으로 업로드 되는 것을 확인할 수 있다.
 
-![upload_success](./images/sftp_upload_success.png)
+![upload_success](images/sftp_upload_success.png)
 
 
 
