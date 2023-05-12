@@ -4,12 +4,15 @@
 * HttpRequest, HttpResponse를 가로채는 역할.
 * DispatcherServlet에서 해당 Controller가 처리되기 전과 후에 발생하는 이벤트.
 * 아래 이미지 처럼 DispatcherServlet와 Controller 사이에서 동작
+* 스프링에서 동작하므로 모든 빈에 접근 가능.
 
 ![spring-mvc](./images/flow.png)\
 (https://goddaehee.tistory.com/154)
 
+### 요구 사항
+* 들어온 유저의 웹 요청에 대한 카운트를 일자 및 시간별로 DB에 저장.
+
 ### 기존 소스 문제점
-* 들어온 웹 요청에 대한 카운트를 DB에 저장하는 요구사항.
 * request 스코프를 이용해 요청 때마다 사용자의 요청 카운트를 저장해주려 함.
   * request 스코프는 웹 요청이 들어오고 나갈때 까지 유지되는 스코프.
 * 그러나 스코프를 사용하면 요청시작때 빈이 생성되고 응답이 나가면 빈이 종료됨.
