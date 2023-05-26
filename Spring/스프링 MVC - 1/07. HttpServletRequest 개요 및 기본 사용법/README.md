@@ -23,6 +23,7 @@ HTTP 요청 메세지를 파싱하여 HttpServletRequest 객체에 담아서 전
 * 바디
   * form 파라미터 형식 조회 
   * message body 데이터 직접 조회
+  * 쿼리파람은 getParameter 등을 사용하여 조회가 가능.
 
 #### 임시 저장소 기능
 해당 HTTP 요청이 시작부터 끝날때 까지 유지하는 임시 저장소 기능
