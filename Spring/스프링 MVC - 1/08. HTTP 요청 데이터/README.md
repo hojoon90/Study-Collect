@@ -83,3 +83,35 @@ for (String name : usernames) {
 
 보통 복수 파라미터를 쓰는 경우는 거의 없지만, 만약 사용하게 된다면 위와 같이 데이터를 가져와야 함.\
 이렇게 중복일 때 getParameter를 이용해 값을 가져오면 맨 첫번째 파라미터 값을 조회해 온다.
+
+
+### POST - HTML Form
+
+POST 메소드로 HTML Form 방식의 데이터를 보낼 때는 아래와 같은 특징이 있음.
+* Content-Type 은 x-www-form-urlencoded 를 사용
+* 메세지 바디에 쿼리파라미터 형식으로 데이터를 전달.
+
+아래와 같이 html 작성 후 테스트 진행
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<form action="/request-param" method="post">
+  username: <input type="text" name="username" /> 
+  age: <input type="text" name="age" /> 
+  <button type="submit">전송</button>
+</form>
+</body>
+</html>
+```
+페이지 접근 후 호출 시 정상 동작 하는것을 볼 수 있음.
+
+x-www-form-urlencoded 타입은 바디의 데이터가 GET 의 쿼리 파라미터와 동일한 것을 볼 수 있음.\
+클라이언트 입장에서는 GET 과 POST의 보내는 방식이 다르지만 서버 입장에서는 두 방식의 데이터가 쿼리 파라미터로 동일 하므로
+같은 메소드로 처리가 가능.
+
+해당 테스트를 더 편하게 하기 위해선 Postman을 이용하는것도 편리함.
