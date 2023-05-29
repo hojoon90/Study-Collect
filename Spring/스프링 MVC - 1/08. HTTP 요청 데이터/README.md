@@ -115,3 +115,36 @@ x-www-form-urlencoded 타입은 바디의 데이터가 GET 의 쿼리 파라미�
 같은 메소드로 처리가 가능.
 
 해당 테스트를 더 편하게 하기 위해선 Postman을 이용하는것도 편리함.
+
+### API 메세지 바디 - 단순 텍스트
+
+HTTP Message Body에 데이터를 직접 넣어서 요청하는 방식. 
+* JSON형식이 제일 많이 쓰임.
+* 그 외에 XML, TEXT 방식도 사용
+* 사용 메소드는 POST, PUT, PATCH
+
+단순 텍스트를 읽기 위한 서블릿 생성
+```java
+@WebServlet(name = "requestBodyStringServlet", urlPatterns = "/request-body-string")
+public class RequestBodyStringServlet extends HttpServlet {
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ServletInputStream inputStream = request.getInputStream();
+        String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+
+        System.out.println("messageBody = " + messageBody);
+
+        response.getWriter().write("OK");
+    }
+}
+```
+* 요청에 대한 값을 읽기 위해서 InputStream 메소드 사용
+* InputStream은 byte 코드로 반환하기 때문에 우리가 읽을 수 있도록 Charset 인코딩을 설정해준다. 여기선 UTF-8로 세팅
+* Postman을 통해 바디에 메세지를 넣어 요청 하면 정상적으로 메세지가 넘어오는 것을 확인.
+
+```text
+messageBody = hello!
+```
+
+### API 메세지 바디 - JSON
+
