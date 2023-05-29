@@ -148,3 +148,65 @@ messageBody = hello!
 
 ### API 메세지 바디 - JSON
 
+Message Body에 JSON으로 요청하는 방식
+* Content-Type: application/json 으로 변경
+* 메세지 바디엔 아까와 다르게 JSON 데이터를 넣어준다.
+  * {"username": "kim", "age": 20}
+
+JSON 데이터를 파싱 할 객체를 하나 만듦
+```java
+@Getter
+@Setter
+public class HelloData {
+    private String username;
+    private int age;
+}
+```
+그 후 JSON 으로 처리할 서블릿을 만들어줌
+
+```java
+@WebServlet(name = "requestBodyJsonServlet", urlPatterns = "/request-body-json")
+public class RequestBodyJsonServlet extends HttpServlet {
+    
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ServletInputStream inputStream = request.getInputStream();
+        String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+
+        System.out.println("messageBody = " + messageBody);
+    }
+}
+
+```
+JSON으로 넣어 호출 시 정상적으로 메세지 바디가 출력되는것을 볼 수 있음.
+```text
+messageBody = {"username": "kim", "age": 20}
+```
+JSON을 담아줄 객체를 아까 만들었으므로 객체를 읽을 수 있는 ObjectMapper 를 추가해줌.
+```java
+@WebServlet(name = "requestBodyJsonServlet", urlPatterns = "/request-body-json")
+public class RequestBodyJsonServlet extends HttpServlet {
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+  
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+          ...
+  
+      HelloData helloData = objectMapper.readValue(messageBody, HelloData.class);
+  
+      System.out.println("helloData.username = " + helloData.getUsername());
+      System.out.println("helloData.age = " + helloData.getAge());
+  
+      response.getWriter().write("OK");
+    }
+}
+```
+호출 해보면 다음과 같이 출력되는 것을 볼 수 있음.
+```Text
+helloData.username = kim
+helloData.age = 20
+```
+JSON을 읽어와 객체로 변경해주려면 별도 라이브러리가 필요하다 (Jackson, GSON).\
+스프링 MVC의 경우 Jackson 라이브러리를 기본적으로 제공해주므로 해당 라이브러리를 이용해 ObjectMapper를 사용한다.
+
