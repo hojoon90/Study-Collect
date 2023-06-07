@@ -33,3 +33,33 @@
 
 #### MVC 패턴 방식
 ![mvc.png](images%2Fmvc.png)
+
+
+### MVC 패턴의 한계
+
+* MVC 패턴으로 컨트롤러와 뷰의 역할을 서로 분리할 수 있었음
+* 하지만 컨트롤러는 중복 코드, 불필요한 코드가 발생함.
+
+#### 중복 코드
+* 뷰로 이동시켜주는 forward가 항상 중복되어 나타남.
+```java
+RequestDispatcher dispatcher = request.getRequestDispatcher(viewPath);
+dispatcher.forward(request, response);
+```
+
+#### viewPath 중복
+* 뷰를 호출하는 viewPath를 계속 만들어주어야 함.
+* 만약 jsp가 아닌 다른 뷰로 변경 시 전체 코드 변경 필요
+```java
+String viewPath = "/WEB-INF/views/new-form.jsp";
+```
+
+#### 불필요 코드
+* HttpServletRequest, HttpServletResponse 는 사용할 때도 있고 사용하지 않을 때도 있음.
+
+#### 공통 처리가 힘듦
+* 기능이 복잡해지면 컨트롤러에서 공통으로 처리해야 할 부분이 많아짐.
+* 공통 메소드로 뺀다 해도 해당 메소드를 계속 호출해주어야 함.
+* 해당 호출을 코드에서 누락할 수도 있음.
+
+이와 같은 문제들을 해결하려면 컨트롤러 호출 전에 공통 기능 처리가 필요. -> 프론트 컨트롤러(Front Controller) 패턴
