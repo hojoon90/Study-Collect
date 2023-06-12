@@ -9,6 +9,10 @@
   * 해당 코드를 분리해 컨트롤러는 논리 이름만 반환
   * 프론트 컨트롤러에서 실제 물리 위치를 찾아서 처리
 
+흐름은 아래와 같다.
+
+![flowV3.png](images%2FflowV3.png)
+
 ### Model객체 생성
 Model과 View 역할을 같이 할 Model 객체를 만든다.
 ```java
