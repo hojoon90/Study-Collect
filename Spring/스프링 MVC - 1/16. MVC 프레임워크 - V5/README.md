@@ -111,3 +111,59 @@ public class FrontControllerServletV5 extends HttpServlet {
 
 서버 실행 후 호출 시 정상 동작 하는것을 확인할 수 있음.\
 이를 통해 좀 더 유연하게 컨트롤러를 받아 호출할 수 있게 되었음.
+
+### ControllerV4 어댑터 추가
+v4 에 대한 어댑터를 추가해보자. 프론트 컨트롤러를 수정해준다.
+```java
+private void initHandlerAdapters() {
+    ...    
+    handlerAdapters.add(new ControllerV4HandlerAdapter());
+}
+
+private void initHandlerMappingMap() {
+    ...
+    
+    handlerMappingMap.put("/front-controller/v5/v4/members/new-form", new MemberFormControllerV4());
+    handlerMappingMap.put("/front-controller/v5/v4/members/save", new MemberSaveControllerV4());
+    handlerMappingMap.put("/front-controller/v5/v4/members", new MemberListControllerV4());
+}
+```
+* 프론트 컨트롤러엔 추가할 내용이 크게 없음.
+* 먼저 어댑터에 ControllerV4HandlerAdapter 추가해준다.
+* 그 후 매핑 메소드에 v4 경로로 들어오는 컨트롤러들을 매핑해준다.
+
+
+### ControllerV4 어댑터 추가
+```java
+public class ControllerV4HandlerAdapter implements hello.servlet.web.frontcontroller.v5.MyHandlerAdapter {
+    @Override
+    public boolean supports(Object handler) {
+        return (handler instanceof ControllerV4);
+    }
+
+    @Override
+    public ModelView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ServletException, IOException {
+        ControllerV4 controller = (ControllerV4) handler;
+
+        Map<String, String> paramMap = createParamMap(request);
+        HashMap<String, Object> model = new HashMap<>();
+
+        String viewName = controller.process(paramMap, model);
+
+        ModelView mv = new ModelView(viewName);
+        mv.setModel(model);
+
+        return mv;
+    }
+    
+    ...
+}
+```
+* 어댑터의 역할은 크게 많지 않다.
+* supports는 V3 어댑터와 동일하게 타입을 체크하여 반환해준다.
+* handle 메소드는 ControllerV4 객체가 넘어왔을 경우 실행되는데, controller.process를 통해 논리 이름을 받아온다.
+* 여기선 리턴값이 ModelView이기 때문에 새로운 ModelView 객체를 생성해준다. 이 때 논리이름을 넣어준다.
+* 그 후 model을 mv 객체에 set 해준 후 리턴해준다.
+
+이 후 서버 실행 시 정상적으로 동작 하는것을 확인할 수 있다. \
+유연하게 설계한 덕분에 FrontController엔 단지 V4 매핑 정보와 어댑터만 추가되었을 뿐, 핵심적인 로직은 그대로인 것을 볼 수 있다.
