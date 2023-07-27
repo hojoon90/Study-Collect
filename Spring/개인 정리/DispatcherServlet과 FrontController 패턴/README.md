@@ -78,3 +78,48 @@ FrontController 특징은 아래와 같다.
 스프링에서 이 역할을 해주는 것이 바로 DispatcherServlet이다.
 
 ## DispatcherServlet
+DispatcherServlet 은 스프링 MVC에서 프론트 컨트롤러 역할을 하는 클래스이다.\
+들어오는 요청들에 대해 모두 받은 후 알맞은 컨트롤러로 전달해주는 역할을 한다. 그렇기에 HttpServlet을 상속 받아 처리되는 클래스다.\
+DispatcherServlet 의 핵심은 들어오는 요청에 대해 핸들러(컨트롤러)를 찾아 실행하고, 그에 맞는 view를 처리해준다.
+
+흐름은 아래와 같다.
+
+![spring.png](images%2Fspring.png)
+
+
+![dispatcher.png](images%2Fdispatcher.png)
+
+DispatcherServlet 은 들어오는 모든 요청을 처리하므로 Servlet을 상속 받는다. 때문에 서블릿으로 동작하며, 당연히 service 메소드가 존재한다.
+
+```java
+public class DispatcherServlet extends FrameworkServlet {
+    ...
+
+    /**
+     * Exposes the DispatcherServlet-specific request attributes and delegates to {@link #doDispatch}
+     * for the actual dispatching.
+     */
+    @Override
+    protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ...
+
+        try {
+            doDispatch(request, response);
+        }
+        finally {
+        
+        ...    
+    }
+    
+    ...
+}
+```
+요청 순서는 아래와 같다.
+1. 요청이 들어오면 HttpServlet의 service 메소드가 실행된다.
+2. 스프링은 DispatcherServlet 의 부모인 FrameworkServlet 에 서비스를 오버라이드 함.
+3. FrameworkServlet.service()가 실행되면서 DispatcherServlet.doService() 실행.
+4. 그리고 핵심인 doDispatch가 실행 됨.
+5. doDispatch에서 위의 흐름에 있는 메소드들을 순서대로 호출하게 된다.
+
+이렇게 doDispatch 메소드는 기존 Servlet에서 공통으로 처리하는 코드들을 모두 한 곳에서 처리하게 해준다. 그렇기에 개발자는
+위의 기존 서블릿 컨트롤러 처럼 중복되는 코드들에 대해 따로 신경쓰지 않고 온전히 비즈니스 로직에 집중할 수 있도록 해준다.
