@@ -11,4 +11,65 @@
 
 (그림 추후 삽입)
 
-단방향 혹은 양방향 관계를 걸어주기 위해선 @OneToMany, @ManyToOne 어노테이션을 엔티티에 걸어준다.
+단방향 혹은 양방향 관계를 걸어주기 위해선 @ManyToOne, @OneToMany 어노테이션을 엔티티에 걸어준다. 
+### @ManyToOne
+* 다대일(n:1)의 관계. 
+* 하나의 상점엔 여러개의 이벤트를 걸 수 있다. 
+* 이벤트가 N, 상점이 1의 관계가 된다.
+* 이벤트가 N이기 때문에 외래키를 관리한다. (DB를 생각해보자.)
+
+단방향 처리.
+```java
+@Entity
+public class Event{
+    @Id
+    private Long Id;
+    
+    private String eventName;
+    
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
+}
+
+@Entity
+public class Store{
+    @Id
+    private Long Id;
+    
+    private String storeName;
+    ...
+}
+```
+* 단방향 처리이며, Event에 @ManyToOne으로 Store 객체를 참조하도록 함.
+* 하지만 Store엔 별다른 어노테이션을 걸지 않음.
+
+양방향 처리
+```java
+@Entity
+public class Event{
+    @Id
+    private Long Id;
+    
+    private String eventName;
+    
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
+}
+
+@Entity
+public class Store{
+    @Id
+    private Long Id;
+    
+    private String storeName;
+
+    @OneToMany(mappedBy = "store") //연관 관계 주인 지정
+    List<Event> events = new ArrayList<>();
+    ...
+}
+```
+* 양방향 처리시엔 1쪽에 @OneToMany 어노테이션을 걸어줌.
+* 양방향이므로 연관관 계 주인을 mappedBy 로 지정.
+* mappedBy 값은 대상 변수명을 따라 지정. 위에서는 Event 객체의 store 라는 이름의 변수이므로 store로 지정.
