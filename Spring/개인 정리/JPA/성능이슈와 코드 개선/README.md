@@ -11,6 +11,8 @@ API 호출 시 최대 5초까지 응답 시간이 걸리는데,
 문제가 된 부분은 모두 쿼리에서 데이터를 가져오는 부분이었다.  
 이번 프로젝트를 진행하면서 처음으로 JPA 를 사용해 보았는데, JPA에 대해 확실하게 알지 못하고 적용하다 보니, 조회와 관련된 성능 이슈들이 발생한 것이다.  
 
+### 첫번째 이슈
+
 먼저 첫번째 문제가 된 쿼리는 아래 쿼리이다.
 ```java
 @Query("select new com.domain.primary.store.model.dto.EventStoreDto(e, s) "
@@ -38,8 +40,76 @@ select * from store where event.id = ?
 이벤트 아이디와 스토어 아이디를 먼저 전체 조회 한 다음 해당 아이디들을 조회하는 쿼리를 하나씩 호출하고 있었다.(...)  
 당연한 이야기이지만 이렇게 조회되면 성능에 영향이 안 갈 수 없다.  
 원인은 JPQL에 생성자로 객체를 바로 넣으면서 생기는 문제 같은데, 일단 급한대로 QueryDSL을 이용해 쿼리 한번으로 조회할 수 있도록 변경해두었다.
-해당 원인은 빠른 시일 내에 자세하게 찾아 볼 예정이다.  
+아래 DTO에 데이터가 들어가면서 발생하는 문제였다.
+```java
+@EqualsAndHashCode
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class EventStoreDto {
+    private Event event;
+    private Store store;
 
+}
+```
+해당 원인은 N+1 문제가 발생한 것으로 보이는데, 해당 현상에 대해 확인하고 적절한 방법을 찾아볼 예정이다. (업데이트 예정)
+
+### 두번째 이슈
+
+두번째 문제는 아래 쿼리에서 발생하였다.
+```java
+    @Override
+    @RedisCacheable(value = "EVENT:findEventRatio", key = "#selectDay")
+    public List<EventStoreDto> findWithStoreBySelectDate(LocalDate selectDate) {
+        return queryFactory.select(
+            Projections.constructor(
+                EventStoreDto.class,
+                event,
+                store
+            )
+        )
+        .from(event)
+        .innerJoin(store)
+        .on(event.storeId.eq(store.id))
+        .where(
+            store.deleted.eq(false)
+            , store.usageStatusType.ne(UsageStatusType.FREEZE)
+            , store.usageStatusType.ne(UsageStatusType.SIGN_OUT)
+            , event.period.endDate.goe(selectDate)
+        ).fetch();
+    }
+```
+단순 조건에 맞춰 이벤트와 상점을 조인하여 가져오는 쿼리인데, 해당 메서드 실행 시 약 500ms 정도 소요되는 것을 확인했다.  
+실행 쿼리를 가져와 DB에서 다이렉트로 조회하였을때는 약 10ms 정도밖에 걸리지 않았기 때문에 메소드에서 소요시간이 많이 걸린다고 판단하였다.  
+확인 결과 Projections.constructor 로 생성자를 만들어줄 때 시간이 오래 걸리는 것을 확인했다.  
+그래서 일단은 아래와 같이 Tuple 을 사용하여 객체를 새로 만들어주는 방식으로 임시로 변경해주었다. 
+```java
+    @Override
+    @RedisCacheable(value = "EVENT:findEventPeriodData")
+    public List<EventPeriodDto> findWithStartEndDate() {
+        List<Tuple> fetch = queryFactory.select(
+                        event,
+                        store
+                )
+                .from(event)
+                .innerJoin(store)
+                .on(event.storeId.eq(store.id))
+                .where(
+                        store.deleted.eq(false)
+                        , store.usageStatusType.ne(UsageStatusType.FREEZE)
+                        , store.usageStatusType.ne(UsageStatusType.SIGN_OUT)
+                        , event.period.endDate.goe(LocalDate.now())
+                )
+                .fetch();
+
+        List<EventPeriodDto> dto = new ArrayList<>();
+        for (Tuple tuple: fetch){
+            Event event1 = tuple.get(event);
+            dto.add(new EventPeriodDto(event1.getId(), event1.getPeriod(), event1.getCreatedAt()));
+        }
+        return dto;
+    }
+```
 
 * 출시하는 앱의 메인(이벤트) API의 응답속도가 현저하게 느림 (최대 5초)
 * 앱의 메인화면에서 호출 하는 API 이므로 속도가 빠르게 나와줘야 함.
