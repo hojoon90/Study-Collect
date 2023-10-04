@@ -63,17 +63,7 @@ configurations {
   querydsl.extendsFrom compileClasspath
 }
 ```
-* sourceSets: gradle build 시에 QClass도 함께 build 하기 위해서 sourceSets 에 해당 위치 추가.
-* 
-
-
-* Projection.bean
-  * setter 기반. 
-  * setter가 안열려있으면 사용할 수 없다.
-* Projection.fields
-  * field에 값을 직접 주입. 
-  * type 이 다르면 매칭되지 않고, 런타임 시점에 에러 확인 가능.
-* Projection.constructor
-  * 해당 클래스와 클래스 안에 있는 필드값들을 넘겨주면 매핑하여 해당 객체로 반환?
-* @QueryProjection 
-  * 해당 클래스 안에 직접 생성자를 만들면 Q클래스로 만들어주고, new 생성을 통해 객체를 만든다??
+* sourceSets: gradle build 시에 QModel도 함께 build 하기 위해서 sourceSets 에 해당 위치 추가.
+* querydsl: jpa 사용여부 및 사용 경로 설정
+* compileQuerydsl: compileJava 시점에 querydsl QModel이 생성
+* configurations: querydsl이 compileClassPath를 상속하도록 설정
