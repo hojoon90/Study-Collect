@@ -35,3 +35,63 @@ public class TestDTO {
     }
 }
 ```
+실제 사용법은 아래와 같다
+```java
+List<TestDTO> result = queryFactory
+        .select(new QTestDTO(test.name, test.age))
+        .from(member)
+        .fetch();
+```
+
+## 그 외
+그 외의 나머지 방법들은 간단하게 사용법만 작성 하도록 하겠다.
+
+### Projection.bean
+setter 메소드를 이용하여 조회하는 방법이다. setter를 이용하기 때문에 setter 접근이 되어야 한다.  
+단순 조회 DTO 라면 setter 로 값을 변경하는데 크게 문제는 없지만, 영속화 데이터를 변경하는 객체라면 setter 오픈이 문제 될 수 있다.  
+```java
+public void testProjectionBean(){
+    List<TestDTO> result = queryFactory
+        .select(Projection.bean(
+                TestDTO.class,
+                test.name, 
+                test.age
+        ))
+        .from(member)
+        .fetch();
+}
+```
+
+### Projection.field
+fielder 에 값을 직접 입력하는 방식이다. 사용법은 Projection.Bean과 거의 유사하며, 반환 타입이 다를 경우 매칭 되지 않는다.  
+또한 컴파일 시점에서 에러를 발견할 수 없고 런타임 시점에서 에러 확인이 가능하다.
+```java
+public void testProjectionBean(){
+    List<TestDTO> result = queryFactory
+        .select(Projection.field(
+                TestDTO.class,
+                test.name.as("username"), 
+                test.age
+        ))
+        .from(member)
+        .fetch();
+}
+```
+필드이름이 매칭되지 않을 경우 ```.as()``` 를 통해 alias를 줄 수 있다.
+
+### Projection.constructor
+생성자를 이용하여 조회 결과를 반환하는 방식. 생성자 기반이기 때문에 객체 불변으로 사용 가능하지만, 매핑 시 문제가 발생할 수 있다.  
+값을 넘길 때, 생성자와 필드의 순서를 맞춰줘야 한다. 필드가 많은 DTO 일 수록 이런 실수가 일어날 가능성이 높다.
+```java
+public void testProjectionBean(){
+    List<TestDTO> result = queryFactory
+        .select(Projection.constructor(
+                TestDTO.class,
+                test.name.as("username"), 
+                test.age
+        ))
+        .from(member)
+        .fetch();
+}
+```
+또한 위 두개 경우 처럼 런타임 시점에 에러확인이 가능하다. 
