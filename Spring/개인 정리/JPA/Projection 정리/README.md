@@ -95,3 +95,7 @@ public void testProjectionBean(){
 }
 ```
 또한 위 두개 경우 처럼 런타임 시점에 에러확인이 가능하다. 
+
+## @QueryProjection 과 Projection.constructor 속도 비교
+
+// DB 데이터 세팅 후 속도 비교 진행 필요
