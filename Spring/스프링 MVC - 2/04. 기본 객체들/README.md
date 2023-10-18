@@ -65,3 +65,31 @@ locale = en_US
 ```
 * param을 통해 쿼리파라미터에 바로 접근이 가능하다. (ex -> param.파라미터_이름)
 * bean의 경우 '@빈이름'을 통해 접근할 수 있고, .을 통해 메소드에 접근하여 사용할 수 있다.
+
+## LocalDate 사용하기
+자바 8부터 새롭게 추가된 LocalDateTime 객체를 사용하려면 아래와 같은 라이브러리가 필요
+* thymeleaf-extras-java8time
+  * 스프링 부트를 사용하는 경우엔 자동으로 추가된다.
+
+날짜용 유틸리티를 사용하는 객체는 ```#temporals``` 이며, 아래와 같이 사용함
+```html
+yyyy-MM-dd HH:mm:ss = <span th:text="${#temporals.format(localDateTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+```
+그 외에 날짜 데이터들은 아래와 같이 가져올 수 있다.
+```html
+<h1>LocalDateTime - Utils</h1>
+<ul>
+    <li>${#temporals.day(localDateTime)} = <span th:text="${#temporals.day(localDateTime)}"></span></li>
+    <li>${#temporals.month(localDateTime)} = <span th:text="${#temporals.month(localDateTime)}"></span></li>
+    <li>${#temporals.monthName(localDateTime)} = <span th:text="${#temporals.monthName(localDateTime)}"></span></li>
+    <li>${#temporals.monthNameShort(localDateTime)} = <span th:text="${#temporals.monthNameShort(localDateTime)}"></span></li>
+    <li>${#temporals.year(localDateTime)} = <span th:text="${#temporals.year(localDateTime)}"></span></li>
+    <li>${#temporals.dayOfWeek(localDateTime)} = <span th:text="${#temporals.dayOfWeek(localDateTime)}"></span></li>
+    <li>${#temporals.dayOfWeekName(localDateTime)} = <span th:text="${#temporals.dayOfWeekName(localDateTime)}"></span></li>
+    <li>${#temporals.dayOfWeekNameShort(localDateTime)} = <span th:text="${#temporals.dayOfWeekNameShort(localDateTime)}"></span></li>
+    <li>${#temporals.hour(localDateTime)} = <span th:text="${#temporals.hour(localDateTime)}"></span></li>
+    <li>${#temporals.minute(localDateTime)} = <span th:text="${#temporals.minute(localDateTime)}"></span></li>
+    <li>${#temporals.second(localDateTime)} = <span th:text="${#temporals.second(localDateTime)}"></span></li>
+    <li>${#temporals.nanosecond(localDateTime)} = <span th:text="${#temporals.nanosecond(localDateTime)}"></span></li>
+</ul>
+```
