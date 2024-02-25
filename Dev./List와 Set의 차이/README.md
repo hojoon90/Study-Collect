@@ -47,7 +47,7 @@ List와 Set, Map은 자바의 Collection 프레임워크에서 제공하는 인�
 * 객체를 삽입하면 자동으로 정렬되는데, 부모값과 비교하여 낮은값은 왼쪽, 높은값은 오른쪽에 저장된다.
 
 ## 참고
-https://coding-factory.tistory.com/555
-https://crazykim2.tistory.com/582
-https://hoon26.tistory.com/25
-https://focus-dev.tistory.com/33
+https://coding-factory.tistory.com/555  
+https://crazykim2.tistory.com/582  
+https://hoon26.tistory.com/25  
+https://focus-dev.tistory.com/33  
