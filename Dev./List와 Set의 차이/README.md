@@ -20,4 +20,34 @@ List와 Set, Map은 자바의 Collection 프레임워크에서 제공하는 인�
 * 대량의 데이터를 한번에 가져와 여러번 참조할 때 최상의 성능을 발휘.
 
 ### LinkedList
-* ArrayList와는 달리 
+* ArrayList와는 달리 인접한 참조를 링크로 걸어 체인처럼 관리.
+* 그렇기에 중간에 데이터를 삭제해도 ArrayList처럼 데이터 재배치가 없음
+* 추가/삭제가 빈번하게 일어나는 대용량 리스트에 사용하면 좋음.
+* 스택, 큐, 우선순위 큐 등을 만드는데 사용됨.
+
+## Set
+* 순서가 없는 데이터 집합
+* 인덱스가 별도로 존재하지 않아 iterator를 이용해야함.
+* 이는 LinkedList역시 동일함. (인덱스가 없으므로)
+* Set 인터페이스는 HashSet, LinkedHashSet, TreeSet 구현체 등이 있음.
+
+### HashSet
+* 빠른 접근속도를 가지나 순서를 알 수 없음.
+* 객체 저장 시 객체의 hashCode() 메소드를 호출하여 해시코드를 알아 냄
+* 저장된 데이터 중 같은 해시 코드가 존재하면 equals()를 통해 동일값인지 비교함.
+* 만약 값이 동일하면 저장하지 않는다.
+
+### LinkedHashSet
+* HashSet과 차이점은 데이터가 삽입 된 순서대로 데이터를 반환한다.
+
+### TreeSet
+* 이진 탐색 구조로 구성된 구현체
+* 추가와 삭제에 시간이 걸리지만 정렬과 검색에 높은 성능을 발휘.
+* 검색과 정렬에 유리한 구현체이다.
+* 객체를 삽입하면 자동으로 정렬되는데, 부모값과 비교하여 낮은값은 왼쪽, 높은값은 오른쪽에 저장된다.
+
+## 참고
+https://coding-factory.tistory.com/555
+https://crazykim2.tistory.com/582
+https://hoon26.tistory.com/25
+https://focus-dev.tistory.com/33
