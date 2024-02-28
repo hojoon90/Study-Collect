@@ -1,6 +1,6 @@
 # List와 Set의 차이
 
-List와 Set, Map은 자바의 Collection 프레임워크에서 제공하는 인터페이스.  
+List와 Set, Map은 자바의 Collection 프레임워크에서 제공하는 인터페이스이다.  
 이중 List와 Set은 비슷한 듯 다른 면이 있어서 이에 대해 정리한다.
 
 ## List
