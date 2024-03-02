@@ -32,10 +32,22 @@ JWT는 위와 같은 특징들을 지닌다.
 
 ### 서버에서 바디값으로 제공하는 경우?
 서버에서 바디값으로 토큰을 제공하여 처리하는 경우는 아무래도 API 호출 시 별도 설정이 필요없다는 것이다.  
-헤더에 넣어 제공할 경우, 서버쪽에서는 작업을 하나 해주어야 한다. 바로 Access-Control-Expose-Headers 설정을 해주는 것이다.
+헤더에 넣어 제공할 경우, 서버쪽에서는 작업을 하나 해주어야 한다. 바로 Access-Control-Expose-Headers 설정을 해주는 것이다.  
+Access-Control-Expose-Headers 헤더는 브라우저의 자바스크립트가 액세스할 수 있는 헤더들을 나타낸다. 기본적으로 CORS 허용 목록에 포함된 응답 헤더만 노출된다.
+만약 다른 헤더에 접근하고 싶다면, 서버에서 해당 헤더를 접근할 수 있도록 설정을 추가해주어야 한다. 즉 응답 헤더에 토큰과 리프레시 토큰이 담긴 헤더에 접근할 수 있도록
+서버가 설정을 변경해주어야 하는 것이다. 만일 서버에서 보안상의 이유로 헤더를 숨겨야 한다면, 바디값으로 토큰 정보들을 제공하는 것이 가장 알맞은 방법일 것이다.  
 
 
+## 결론
+JWT 의 재갱신을 어떻게 처리하는게 좋을지에 대해 각각의 방법으로 알아보았다. 개인적으로는 첫 로그인시 토큰 발급은 Body를 통해 발급해주고, 재갱신과 같은 처리는
+헤더값을 통해 처리하는게 더 괜찮은 방법이라고 생각이 들었다. 서버단에서 엑세스토큰 만료와 리프레시 토큰 만료까지만 잘 구분하여 전달해준다면 서버측도 별도의 재갱신 API가 필요없고,
+클라이언트 역시 단순하게 토큰 만료시 리프레시 토큰만 추가하여 더 호출하면 되기 때문이다.  
+하지만 가장 중요한 것은 쓰는 방법에는 정답이 없단 것이다. 자신이 쓰기 더 편한 방식 혹은 같이 일하는 사람과 맞춰갈 수 있는 방식이 가장 베스트한 방식이라고 생각한다.
 
 
+## 출처
 https://velog.io/@hiy7030/Spring-Security-JWT-Token
 https://velog.io/@kwontae1313/JSON-Web-Token%EC%9D%80-%EC%99%9C-%ED%97%A4%EB%8D%94%EB%A1%9C-%EC%A3%BC%EA%B3%A0%EB%B0%9B%EC%9D%84%EA%B9%8C
+https://velog.io/@rhqjatn2398/Access-Control-Expose-Headers-CORS-safelisted-response-header
+https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+https://fetch.spec.whatwg.org/#cors-safelisted-response-header
