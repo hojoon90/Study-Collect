@@ -1,21 +1,70 @@
 # ObjectMapper
 
-Json 데이터를 객체에 매핑할 때 ObjectMapper를 많이 사용한다. 기존에 ObjectMapper를 통해 객체를 매핑할때는
-객체에 아래와 같은 애노테이션들을 추가해주었다.
+Json 데이터를 객체에 매핑할 때 많이 사용하는 객체가 바로 Jackson ObjectMapper(이하 ObjectMapper)다.  
+ObjectMapper 를 사용하는 가장 큰 이유는 JSON 데이터를 객체로 손쉽게 매핑해주기 때문인데, JSON을 객체에 매핑하거나 객체를 JSON으로 변환할 때
+일련의 과정을 거쳐 데이터 변환이 이루어 진다. 이 글에서는 사용 방법과 동작 원리에 대해 간단히 정리 해보려 한다.
+
+## ObjectMapper 의존성 추가
+의존성은 아래와 같은 방법으로 추가할 수 있다.
+
+### Maven
+pom.xml 안에 아래와 같이 추가.
+```xml
+  <dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>${jackson.version}</version>
+  </dependency>
+```
+### Gradle
+build.gradle 안에 아래와 같이 추가.
+```groovy
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+```
+
+## 사용법
+간단한 예시로 확인해보자.
 ```java
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Sample{
+public class User{
+    private Long userId;
+    private String accountId;
+    private String name;
+    private String email;
     
-    private String sample1;
-    private String sample2;
-    private String sample3;
-    private String sample4;
-    //...
+    public User(){
+        
+    }
     
+    public Long getUserId(){
+        return userId;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public String getName() {
+        return name;
+    }
+    
+    public String getEmail(){
+        return email;
+    }
 }
 ```
-위와 같이 작성해 줄 경우 API 에서 응답하는 Json 데이터를 정상적으로 매핑하게 된다.  
-하지만 매핑이 어떻게 이루어지는지 정확하게 알고 사용하지 않고 있어서 이번 기회에 ObjectMapper가 어떤 방식으로 동작하는지 확인하려 한다.
+유저 정보를 제공해주는 API를 이용해 유저 객체를 만들어 보려 한다. 제공되는 JSON 은 아래와 같다.
+
+```json
+{
+  "userId": 21,
+  "accountId": "sirlewis123",
+  "userName": "Lewis Hamilton",
+  "email": "sirlewis123@test.com",
+  "phone": "010-0123-4567",
+  "gender": "M"
+}
+
+```
+
+https://interconnection.tistory.com/137  
+https://www.baeldung.com/jackson-object-mapper-tutorial  
