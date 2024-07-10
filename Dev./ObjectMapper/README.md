@@ -107,8 +107,121 @@ objectMapper 객체를 생성할 때 설정을 하나 넣어주었는데, 역직
 ObjectMapper 가 동작하는 원리는 아래와 같다.
 
 ## 동작 원리
+ObjectMapper의 readValue 기준으로 코드 내부를 보면 다음과 같다.
+```java
+...
 
+public <T> T readValue(String content, Class<T> valueType) throws JsonProcessingException, JsonMappingException {
+    this._assertNotNull("content", content);
+    return this.readValue(content, this._typeFactory.constructType(valueType));
+}
 
+...
 
+public <T> T readValue(String content, JavaType valueType) throws JsonProcessingException, JsonMappingException {
+    this._assertNotNull("content", content);
+
+    try {
+        return this._readMapAndClose(this._jsonFactory.createParser(content), valueType);
+    } catch (JsonProcessingException var4) {
+        throw var4;
+    } catch (IOException var5) {
+        throw JsonMappingException.fromUnexpectedIOE(var5);
+    }
+}
+```
+readValue 메서드는 다양한 데이터들을 처리하기 위해 여러개가 오버로딩 되어있다.   
+일단 코드를 보면 결국 데이터 반환을 위해선 실제 데이터의 String 값과 JavaType을 받는것을 알 수 있다.  
+또한 return 쪽의 this._jsonFactory.createParser를 통해 데이터를 JsonParser형태로 만들어주는 것도 볼 수 있다.
+```java
+ protected Object _readMapAndClose(JsonParser p0, JavaType valueType) throws IOException {
+        JsonParser p = p0;
+        Throwable var4 = null;
+
+        Object var9;
+        try {
+            DeserializationConfig cfg = this.getDeserializationConfig();
+            DefaultDeserializationContext ctxt = this.createDeserializationContext(p, cfg);
+            JsonToken t = this._initForReading(p, valueType);
+            Object result;
+            if (t == JsonToken.VALUE_NULL) {
+                result = this._findRootDeserializer(ctxt, valueType).getNullValue(ctxt);
+            } else if (t != JsonToken.END_ARRAY && t != JsonToken.END_OBJECT) {
+                result = ctxt.readRootValue(p, valueType, this._findRootDeserializer(ctxt, valueType), (Object)null);
+                ctxt.checkUnresolvedObjectId();
+            } else {
+                result = null;
+            }
+
+            ...
+```
+_readMapAndClose 메서드에서 핵심적인 부분은 바로 else if 부분의 로직이다.  
+변환한 JsonToken값의 끝나는 값이 배열형태([]) 혹은 객체 형태({})일 경우 실제 데이터를 객체로 변환해주는 작업을 처리한다.  
+this._findRootDeserializer 메서드를 파고 들어가보면 ctxt (DefaultDeserializationContext)객체에 valueType을 던져서 알맞은 Deserialize 객체를 찾아오는데, 
+여기서는 간단하게 설명으로만 대신하도록 한다.  
+```java
+public Object readRootValue(JsonParser p, JavaType valueType, JsonDeserializer<Object> deser, Object valueToUpdate) throws IOException {
+    if (this._config.useRootWrapping()) {
+        return this._unwrapAndDeserialize(p, valueType, deser, valueToUpdate);
+    } else {
+        return valueToUpdate == null ? deser.deserialize(p, this) : deser.deserialize(p, this, valueToUpdate);
+    }
+}
+```
+readRootValue 객체에서는 실제 값을 deserialize 처리해주는 메서드를 호출해준다. ObjectMapper 설정값에 useRootWrapping 설정을 별도로 안해주었으면
+else 부분을 확인하면 된다.  
+파라미터 중에 JsonDeserializer<Object> deser 가 존재하는데, 위의 메서드에서 찾았던 Deserialize 객체가 넘어오게 된다.  
+JsonDeserializer는 추상객체로서 해당 객체를 상속 받는 여러 객체가 있는데, 예시의 경우에선 BeanDeserializer 객체를 반환받게 된다.
+
+```java
+public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    if (p.isExpectedStartObjectToken()) {
+        if (this._vanillaProcessing) {
+            return this.vanillaDeserialize(p, ctxt, p.nextToken());
+        } else {
+            p.nextToken();
+            return this._objectIdReader != null ? this.deserializeWithObjectId(p, ctxt) : this.deserializeFromObject(p, ctxt);
+        }
+    } else {
+        return this._deserializeOther(p, ctxt, p.currentToken());
+    }
+}
+
+...
+
+private final Object vanillaDeserialize(JsonParser p, DeserializationContext ctxt, JsonToken t) throws IOException {
+    Object bean = this._valueInstantiator.createUsingDefault(ctxt);
+    p.setCurrentValue(bean);
+    if (p.hasTokenId(5)) {
+        String propName = p.currentName();
+
+        do {
+            p.nextToken();
+            SettableBeanProperty prop = this._beanProperties.find(propName);
+            if (prop != null) {
+                try {
+                    prop.deserializeAndSet(p, ctxt, bean);
+                } catch (Exception var8) {
+                    this.wrapAndThrow(var8, bean, propName, ctxt);
+                }
+            } else {
+                this.handleUnknownVanilla(p, ctxt, bean, propName);
+            }
+        } while((propName = p.nextFieldName()) != null);
+    }
+
+    return bean;
+}
+```
+BeanDeserializer 객체의 일부 코드이다. 이제 앞 메서드에서 넘어온 데이터들은 vanillaDeserialize 메서드를 타게 되고, 여기서 실제 객체 매핑이 일어나게 된다.  
+vanillaDeserialize 메서드 맨 첫줄의 createUsingDefault 메서드에서 아무 변수가 없는 빈 생성자를 호출하여 객체를 생성한다.  
+그리고 while문을 통해 실제 객체필드에 json으로 넘어왔던 값들을 세팅해주는 로직이 동작하게 된다(prop.deserializeAndSet. prop 변수는 FieldProperty 객체이다.).  
+그러고 나서 bean 변수를 return 하면서 JSON 데이터를 객체로 매핑하게 된다.
+
+결국 내부 로직에서 빈 생성자를 만들고, 해당 키를 찾아서 빈 객체에다가 값을 내부적으로 세팅해주기 때문에 우리가 만든 객체에서는 
+별도의 setter나 모든 파라미터를 받는 생성자가 필요없는 것이다.
+
+## 참고 사이트
 https://interconnection.tistory.com/137  
-https://www.baeldung.com/jackson-object-mapper-tutorial  
+https://www.baeldung.com/jackson-object-mapper-tutorial
+https://sedangdang.tistory.com/307
