@@ -158,7 +158,7 @@ readValue 메서드는 다양한 데이터들을 처리하기 위해 여러개�
 _readMapAndClose 메서드에서 핵심적인 부분은 바로 else if 부분의 로직이다.  
 변환한 JsonToken값의 끝나는 값이 배열형태([]) 혹은 객체 형태({})일 경우 실제 데이터를 객체로 변환해주는 작업을 처리한다.  
 this._findRootDeserializer 메서드를 파고 들어가보면 ctxt (DefaultDeserializationContext)객체에 valueType을 던져서 알맞은 Deserialize 객체를 찾아오는데, 
-여기서는 간단하게 설명으로만 대신하도록 한다.  
+내부로직은 따로 여기서는 설명하지 않도록 하겠다.  
 ```java
 public Object readRootValue(JsonParser p, JavaType valueType, JsonDeserializer<Object> deser, Object valueToUpdate) throws IOException {
     if (this._config.useRootWrapping()) {
