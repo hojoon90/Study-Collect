@@ -128,6 +128,21 @@ Digest: sha256:5466af30b8eaf3f75edd3c74703d1c9973f0963acd6ef164913ea6f195d640c2
 Status: Downloaded newer image for portainer/portainer-ce:latest
 2127e40a40e92b24677ec32693785819e516a1520937556d5e1fb92123de320d
 ```
+-- 25.2.11 수정
+포트가 8000에서 9000으로 변경
+```shell
+[root@localhost ~]# docker run -d -p 9000:9000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+Unable to find image 'portainer/portainer-ce:latest' locally
+latest: Pulling from portainer/portainer-ce
+772227786281: Pull complete
+96fd13befc87: Pull complete
+884dbe464e55: Pull complete
+f60f1fd54bd7: Pull complete
+Digest: sha256:5466af30b8eaf3f75edd3c74703d1c9973f0963acd6ef164913ea6f195d640c2
+Status: Downloaded newer image for portainer/portainer-ce:latest
+2127e40a40e92b24677ec32693785819e516a1520937556d5e1fb92123de320d
+```
+
 
 실행 후 https://{접근 IP}:9443 을 웹브라우저에 입력하면 아래와 같이 초기 생성화면이 나타난다.
 ![portainer_main.png](images/portainer_main.png)
